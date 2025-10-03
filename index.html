@@ -5,107 +5,203 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>ระบบจัดก๊วนตีแบด — พร้อมประวัติ & แก้เฉพาะคน</title>
 <style>
-  /* แก้ไขให้เป็นโทนสีดำเพื่อความสบายตา */
-  :root{--bg:#121212;--card:#1e1e1e;--muted:#b0b0b0;--accent:#2563eb}
+  /* ****************************************************** */
+  /* *** การแก้ไขใหม่: Light/Dark Mode CSS Variables *** */
+  /* ****************************************************** */
+  
+  /* DARK MODE (Default) */
+  :root[data-theme="dark"] {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-muted: #b0b0b0;
+    --input-bg: #2d2d2d;
+    --input-border: #333;
+    --accent: #2563eb; /* Blue */
+    --success: #22c55e; /* Green */
+    --warning: #f59e0b; /* Amber */
+    --danger: #ef4444; /* Red */
+    --pending-bg: #332d1e;
+    --pending-border: #554422;
+    --divider: #333;
+    --gray-button: #6b7280;
+    --payment-box-bg: #2d2d2d;
+  }
+
+  /* LIGHT MODE */
+  :root[data-theme="light"] {
+    --bg: #f4f4f5; /* Zinc 100 */
+    --card: #ffffff;
+    --text-primary: #18181b; /* Zinc 900 */
+    --text-muted: #71717a; /* Zinc 500 */
+    --input-bg: #ffffff;
+    --input-border: #e4e4e7; /* Zinc 200 */
+    --accent: #3b82f6; /* Blue */
+    --success: #16a34a; /* Green */
+    --warning: #f97316; /* Orange */
+    --danger: #dc2626; /* Red */
+    --pending-bg: #fef3c7; /* Amber 100 */
+    --pending-border: #fcd34d; /* Amber 300 */
+    --divider: #e4e4e7;
+    --gray-button: #9ca3af;
+    --payment-box-bg: #f5f5f5;
+  }
+  
+  /* Apply variables */
   *{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial}
-  body{margin:0;background:var(--bg);padding:18px;color:#e0e0e0} /* เปลี่ยนสีตัวอักษรหลักเป็นสีอ่อน */
+  body{
+      margin:0;
+      background:var(--bg);
+      padding:18px;
+      color:var(--text-primary); /* ใช้สีตัวอักษรหลัก */
+      transition: background-color 0.3s, color 0.3s;
+  } 
   .wrap{max-width:1100px;margin:0 auto}
   header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   h1{font-size:20px;margin:0}
-  .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.4);margin-bottom:12px} /* ปรับเงาให้เข้ากับธีมมืด */
+  .card{
+      background:var(--card);
+      padding:14px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.15); /* ปรับเงาให้เข้าได้ทั้งสองธีม */
+      margin-bottom:12px
+  } 
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  input[type="text"], input[type="number"], select{padding:8px;border-radius:8px;border:1px solid #333; background-color: #2d2d2d; color: #e0e0e0;} /* ปรับสี input/select */
-  button{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer}
-  button.gray{background:#6b7280}
-  button.red{background:#ef4444}
+  input[type="text"], input[type="number"], select{
+      padding:8px;
+      border-radius:8px;
+      border:1px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-primary); /* ใช้สีตัวอักษรหลัก */
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  button{
+      padding:8px 10px;
+      border-radius:8px;
+      border:0;
+      background:var(--accent);
+      color:white;
+      cursor:pointer;
+      transition: background-color 0.2s;
+  }
+  button.gray{background:var(--gray-button)}
+  button.red{background:var(--danger)}
   table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
-  th,td{padding:8px;border-bottom:1px solid #333;text-align:left;vertical-align:middle} /* ปรับสีเส้นขอบตาราง */
+  th,td{
+      padding:8px;
+      border-bottom:1px solid var(--divider); /* ใช้สีเส้นขอบตาราง */
+      text-align:left;
+      vertical-align:middle
+  } 
   th.play, td.play{width:34px;text-align:center}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px}
-  .court{padding:12px;border-radius:10px;background:#2d2d2d;border:1px solid #333; transition: all 0.2s ease-in-out;} /* ปรับสีสนาม */
-  .muted{color:var(--muted);font-size:13px}
+  .court{
+      padding:12px;
+      border-radius:10px;
+      background:var(--input-bg); /* ใช้สีพื้นหลังของ input */
+      border:1px solid var(--input-border);
+      transition: all 0.2s ease-in-out;
+  } 
+  .muted{color:var(--text-muted);font-size:13px}
   .small{font-size:12px}
   .players{margin-top:8px}
   .player-line{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
-  .pending{background:#332d1e;padding:8px;border-radius:8px;border:1px solid #554422;margin-top:8px} /* ปรับสี pending */
+  .pending{
+      background:var(--pending-bg);
+      padding:8px;
+      border-radius:8px;
+      border:1px solid var(--pending-border);
+      margin-top:8px;
+      color: var(--text-primary);
+  } 
   .court.dragging { opacity: 0.5; }
   .court.drag-over { border: 2px dashed var(--accent); }
+  
+  /* Specific styling for court name input to match the background/theme */
+  .court input[type="text"] {
+    background-color: transparent !important; /* Make court name input transparent */
+    border: 0 !important;
+    padding: 0 !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* Status Select Styling */
+  .status-select-มาแล้ว { background-color: var(--success) !important; color: white !important; }
+  .status-select-ยังไม่มา { background-color: var(--danger) !important; color: white !important; }
+
+  /* Payment Section Styling */
+  #paymentModeContent > div:last-child {
+      background: var(--payment-box-bg); /* Use a slightly different background for the summary box */
+      padding: 10px; 
+      border-radius: 8px;
+  }
+  
+  /* ****************************************************** */
+  /* *** Media Queries and other existing styles *** */
+  /* ****************************************************** */
   @media(max-width:640px){
     th,td{font-size:12px} 
     h1{font-size:18px}
-    
-    /* ****************************************************** */
-    /* *** การแก้ไขใหม่: กำหนด min-width ให้ตารางต้องเลื่อน *** */
-    /* ****************************************************** */
     #membersTable {
-        min-width: 900px; /* บังคับให้ตารางกว้าง 900px เพื่อให้ทุกคอลัมน์แสดงผล */
+        min-width: 900px;
     }
-    
     #membersTable thead th:nth-child(2),
     #membersTable tbody td:nth-child(2) {
       display: table-cell;
       min-width: 120px;
     }
-    /* ทำให้คอลัมน์เล่น (1-9) แคบลงเป็นพิเศษ เพื่อเพิ่มพื้นที่ให้คอลัมน์อื่น */
     #membersTable th:nth-child(n+7):nth-child(-n+15),
     #membersTable tbody td:nth-child(n+7):nth-child(-n+15) {
         width: 25px !important; 
     }
-    
-    /* ****************************************************** */
-    /* *** การแก้ไขใหม่: ปรับตารางคิดเงินตามจำนวนลูก *** */
-    /* ****************************************************** */
     #paymentModeContent #scTable {
-        min-width: unset !important; /* ยกเลิก min-width ที่อาจถูกกำหนดไว้ */
-        table-layout: fixed; /* บังคับให้ใช้ความกว้างที่กำหนด */
+        min-width: unset !important;
+        table-layout: fixed;
         width: 100%;
     }
     #paymentModeContent #scTable th, #paymentModeContent #scTable td {
-        white-space: nowrap; /* ป้องกันข้อความขึ้นบรรทัดใหม่ */
+        white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis; /* ใส่ ... ถ้าข้อความยาวเกิน */
-        padding: 6px 4px; /* ลด padding เพื่อประหยัดพื้นที่ */
+        text-overflow: ellipsis;
+        padding: 6px 4px;
     }
-    /* กำหนดความกว้างคอลัมน์เพื่อให้รวมกันเป็น 100% */
-    #paymentModeContent #scTable th:nth-child(1), #paymentModeContent #scTable td:nth-child(1) { width: 40%; } /* ชื่อ */
-    #paymentModeContent #scTable th:nth-child(2), #paymentModeContent #scTable td:nth-child(2) { width: 15%; } /* เกมที่ลง */
-    #paymentModeContent #scTable th:nth-child(3), #paymentModeContent #scTable td:nth-child(3) { width: 15%; } /* ลูกที่ใช้ */
-    #paymentModeContent #scTable th:nth-child(4), #paymentModeContent #scTable td:nth-child(4) { width: 30%; } /* ค่าลูกที่ต้องจ่าย */
-
-    
-    /* ****************************************************** */
-    /* *** การแก้ไขใหม่: ปรับขนาดปุ่มในสนามสำหรับมือถือ *** */
-    /* ****************************************************** */
+    #paymentModeContent #scTable th:nth-child(1), #paymentModeContent #scTable td:nth-child(1) { width: 40%; }
+    #paymentModeContent #scTable th:nth-child(2), #paymentModeContent #scTable td:nth-child(2) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(3), #paymentModeContent #scTable td:nth-child(3) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(4), #paymentModeContent #scTable td:nth-child(4) { width: 30%; }
     .court > div:first-child {
-        flex-wrap: nowrap; /* ป้องกันการขึ้นบรรทัดใหม่ของชื่อ/ปุ่ม */
+        flex-wrap: nowrap;
     }
-    .court > div:first-child > div:last-child { /* Targets controls div */
-        gap: 4px; /* ลดช่องว่างระหว่างปุ่ม */
+    .court > div:first-child > div:last-child {
+        gap: 4px;
     }
     .court button {
-      padding: 4px 6px; /* ลด padding ให้ปุ่มเล็กลง */
-      font-size: 11px; /* ลดขนาดตัวอักษร */
-      white-space: nowrap; /* ป้องกันข้อความในปุ่มขึ้นบรรทัดใหม่ */
+      padding: 4px 6px;
+      font-size: 11px;
+      white-space: nowrap;
     }
     .court input[type="text"] {
-        width: 70px !important; /* ทำให้ช่องชื่อสนามเล็กลง */
+        width: 70px !important;
         padding: 4px 6px !important;
         font-size: 16px !important;
     }
   }
-  /* CSS สำหรับการเลื่อนดูประวัติ */
   .history-scroll {
-    max-height: 120px; /* กำหนดความสูงสูงสุดเป็น 120px */
-    overflow-y: auto;  /* เปิดใช้งานการเลื่อนในแนวตั้งเมื่อเนื้อหาเกิน */
-    margin-top: 10px; /* เพิ่มระยะห่างด้านบนเล็กน้อย */
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 10px;
   }
 </style>
 </head>
-<body>
-  <div class="wrap">
+<body data-theme="dark"> <div class="wrap">
     <header>
       <h1>ระบบจัดก๊วนตีแบด</h1>
-      <div class="muted small">เก็บข้อมูลในเครื่อง (localStorage)</div>
+      <div class="row">
+        <button id="btnToggleTheme" onclick="toggleTheme()" class="gray" style="background:var(--gray-button); color:white;">
+          สลับเป็น Light Mode ☀️
+        </button>
+        <div class="muted small">เก็บข้อมูลในเครื่อง (LocalStorage)</div>
+      </div>
     </header>
 
     <section class="card" id="membersCard">
@@ -199,7 +295,7 @@
         <div id="paymentModeContent" style="margin-top: 12px;">
             </div>
     </section>
-    <footer style="margin-top:8px;color:#475569;font-size:13px">หมายเหตุ: ระบบพยายามเลือกผู้เล่นที่เล่นน้อยสุดก่อน และหลีกเลี่ยงการจับคู่ซ้ำ หากหาไม่ได้จะแจ้งให้ทราบ</footer>
+    <footer style="margin-top:8px;color:var(--text-muted);font-size:13px">หมายเหตุ: ระบบพยายามเลือกผู้เล่นที่เล่นน้อยสุดก่อน และหลีกเลี่ยงการจับคู่ซ้ำ หากหาไม่ได้จะแจ้งให้ทราบ</footer>
   </div>
 
 <script>
@@ -219,10 +315,8 @@ let members = load('bm_members') || [];
 let courts = load('bm_courts') || [];
 let pairHistory = load('bm_pairHistory') || {};
 let matchHistory = load('bm_matchHistory') || [];
-
-// *** NEW: Calculation Data ***
 let calcData = load('bm_calcData') || {
-  mode: 'equal', // 'equal' or 'shuttlecock'
+  mode: 'equal', 
   equal: {
     courtCost: 0,
     shuttlecockCost: 0,
@@ -233,19 +327,47 @@ let calcData = load('bm_calcData') || {
     shuttlecockCost: 0
   }
 };
-// ***************************
 
 function saveAll(){ 
   save('bm_members', members); 
   save('bm_courts', courts); 
   save('bm_pairHistory', pairHistory); 
   save('bm_matchHistory', matchHistory); 
-  save('bm_calcData', calcData); // Save new data structure
+  save('bm_calcData', calcData);
 }
 
 const membersTbody = document.getElementById('membersTbody');
 const courtsGrid = document.getElementById('courtsGrid');
 const historyList = document.getElementById('historyList');
+
+/* ****************************************************** */
+/* *** การแก้ไขใหม่: Theme Toggle Functions *** */
+/* ****************************************************** */
+function setInitialTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const btn = document.getElementById('btnToggleTheme');
+    if (btn) {
+        btn.textContent = savedTheme === 'dark' ? 'สลับเป็น Light Mode ☀️' : 'สลับเป็น Dark Mode 🌙';
+    }
+}
+
+window.toggleTheme = function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    const btn = document.getElementById('btnToggleTheme');
+    if (btn) {
+        btn.textContent = newTheme === 'dark' ? 'สลับเป็น Light Mode ☀️' : 'สลับเป็น Dark Mode 🌙';
+    }
+}
+// Set theme immediately when script runs
+setInitialTheme();
+/* ****************************************************** */
+/* *** END: Theme Toggle Functions *** */
+/* ****************************************************** */
+
 
 function getPlayersInCourtIds(){
   // IDs of members who are confirmed in a court (court.players)
@@ -269,9 +391,8 @@ function formatTime(seconds) {
   return `${h}:${m}:${s}`;
 }
 
-// Store a reference to the member rows for faster updates
 const memberRows = new Map();
-let sortedHistoryRows = []; // Variable to store history data for filtering
+let sortedHistoryRows = [];
 
 /**
  * *** การแก้ไขหลัก: ทำให้เวลา "รอ" นับตลอดเวลาสำหรับคนที่ "มาแล้ว" และ "ไม่ยืนยันในสนาม" เท่านั้น ***
@@ -287,13 +408,13 @@ function updateWaitTimes() {
     
     // Timer runs if the status is "มาแล้ว" AND the player is NOT in a confirmed court
     if (m.status === 'มาแล้ว' && !inCourtIds.has(m.id)) {
-      // If waitStartTime is null, initialize it to Date.now()
+      // 1. เวลาหายไปทันที: หากเข้าเงื่อนไข แต่ waitStartTime เป็น null ให้เริ่มจับใหม่
       if(!m.waitStartTime) m.waitStartTime = Date.now();
       
       const seconds = Math.floor((Date.now() - m.waitStartTime) / 1000);
       waitTimeEl.textContent = formatTime(seconds);
     } else {
-      // If status is "ยังไม่มา" OR in a confirmed court, display hyphen and clear the start time
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที (หรือสถานะยังไม่มา)
       m.waitStartTime = null; 
       waitTimeEl.textContent = '-';
     }
@@ -301,26 +422,27 @@ function updateWaitTimes() {
 }
 
 function renderMembers(){
-  const inCourtOrPendingIds = new Set(courts.flatMap(c => (c.players || []).concat(c.pending ? c.pending.teams.flat() : [])).filter(Boolean));
-  const inCourtIds = getPlayersInCourtIds(); // IDs ที่อยู่ใน court.players สำหรับการควบคุมเวลา
+  const inCourtIds = getPlayersInCourtIds(); 
   
   membersTbody.innerHTML = '';
-  memberRows.clear(); // Clear the map when re-rendering
+  memberRows.clear(); 
   if(members.length === 0){
-    // Changed colspan from 15 to 16 to accommodate the new column
-    membersTbody.innerHTML = '<tr><td colspan="16" style="padding:18px;text-align:center;color:#64748b">ยังไม่มีสมาชิก — เพิ่มสมาชิกเพื่อเริ่มใช้งาน</td></tr>';
+    membersTbody.innerHTML = '<tr><td colspan="16" style="padding:18px;text-align:center;color:var(--text-muted)">ยังไม่มีสมาชิก — เพิ่มสมาชิกเพื่อเริ่มใช้งาน</td></tr>';
     return;
   }
 
   members.forEach((m, idx) => {
     m.plays = m.plays || Array(9).fill(false);
     if(!m.status) m.status = 'ยังไม่มา';
-    if(m.shuttlecocksUsed === undefined) m.shuttlecocksUsed = 0; // Initialize new property
+    if(m.shuttlecocksUsed === undefined) m.shuttlecocksUsed = 0;
     
     const tr = document.createElement('tr');
     tr.dataset.memberId = m.id;
-    memberRows.set(m.id, tr); // Store a reference to the row
+    memberRows.set(m.id, tr);
 
+    // ลำดับ, ชื่อ, ระดับมือ (Code unchanged for brevity, uses new CSS variables)
+    // ... [Code for index, name input, skill select] ...
+    
     // ลำดับ
     const tdIdx = document.createElement('td');
     tdIdx.textContent = idx + 1;
@@ -336,7 +458,7 @@ function renderMembers(){
       m.name = nameInput.value.trim();
       saveAll();
       renderCourts();
-      renderHistory(); // อัปเดตเมื่อมีการเปลี่ยนชื่อ
+      renderHistory();
     };
     tdName.appendChild(nameInput);
     tr.appendChild(tdName);
@@ -355,6 +477,7 @@ function renderMembers(){
     tdSkill.appendChild(selSkill);
     tr.appendChild(tdSkill);
 
+
     // เวลาที่รอ
     const tdWaitTime = document.createElement('td');
     tdWaitTime.className = 'wait-time';
@@ -364,15 +487,11 @@ function renderMembers(){
     // สถานะ
     const tdStatus = document.createElement('td');
     const selStatus = document.createElement('select');
+    
     function updateStatusColor(selectEl) {
-      if(selectEl.value === 'มาแล้ว'){
-        selectEl.style.backgroundColor = '#22c55e';
-        selectEl.style.color = 'white';
-      } else {
-        selStatus.style.backgroundColor = '#ef4444';
-        selectEl.style.color = 'white';
-      }
+      selectEl.className = selectEl.value === 'มาแล้ว' ? 'status-select-มาแล้ว' : 'status-select-ยังไม่มา';
     }
+    
     ['ยังไม่มา','มาแล้ว'].forEach(s => {
       const op = document.createElement('option');
       op.value = s;
@@ -381,43 +500,47 @@ function renderMembers(){
       selStatus.appendChild(op);
     });
     updateStatusColor(selStatus);
+    
     selStatus.onchange = () => {
       m.status = selStatus.value;
       
       // *** MODIFICATION: ปรับปรุงเงื่อนไขการเริ่มจับเวลา ***
-      if (m.status === 'มาแล้ว' && !inCourtIds.has(m.id) && !m.waitStartTime) {
-        m.waitStartTime = Date.now(); // เริ่มจับเวลาครั้งแรกเมื่อ "มาแล้ว" และ "ไม่ได้อยู่ในสนามที่ยืนยัน"
-      } else if (m.status === 'ยังไม่มา') {
-        m.waitStartTime = null; // หยุดจับเวลาเมื่อ "ยังไม่มา"
+      if (m.status === 'มาแล้ว' && !inCourtIds.has(m.id)) {
+        // เริ่มจับเวลาครั้งแรกเมื่อ "มาแล้ว" และ "ไม่ได้อยู่ในสนามที่ยืนยัน"
+        if(!m.waitStartTime) m.waitStartTime = Date.now(); 
+      } else if (m.status === 'ยังไม่มา' || inCourtIds.has(m.id)) {
+        m.waitStartTime = null; // หยุดจับเวลาเมื่อ "ยังไม่มา" หรืออยู่ในสนามที่ยืนยันแล้ว
       }
       
       updateStatusColor(selStatus);
       saveAll();
-      updateWaitTimes(); // Trigger a quick update after change
-      renderPaymentSection(); // *** NEW: Update payment section after status change ***
+      updateWaitTimes(); 
+      renderPaymentSection();
     };
     tdStatus.appendChild(selStatus);
     tr.appendChild(tdStatus);
 
-    // ลูกที่ใช้ (Force integer display and update)
+    // ลูกที่ใช้ (Code unchanged for brevity, uses new CSS variables)
+    // ... [Code for shuttlecock input] ...
     const tdShuttlecock = document.createElement('td');
     const scInput = document.createElement('input');
     scInput.type = 'number';
     scInput.min = '0';
-    scInput.step = '1'; // Force input to integer step
-    scInput.value = Math.round(m.shuttlecocksUsed || 0); // Display rounded integer
+    scInput.step = '1';
+    scInput.value = Math.round(m.shuttlecocksUsed || 0);
     scInput.style.width = '100%';
     scInput.onchange = () => {
-      const val = parseInt(scInput.value) || 0; // Use parseInt for integer
+      const val = parseInt(scInput.value) || 0;
       m.shuttlecocksUsed = Math.max(0, val);
-      scInput.value = m.shuttlecocksUsed; // Ensure it reverts to integer display after edit
+      scInput.value = m.shuttlecocksUsed;
       saveAll();
-      renderPaymentSection(); // *** NEW: Update payment section after shuttlecock change ***
+      renderPaymentSection();
     };
     tdShuttlecock.appendChild(scInput);
     tr.appendChild(tdShuttlecock);
     
-    // plays 1-9
+    // plays 1-9 (Code unchanged for brevity)
+    // ... [Code for plays checkboxes] ...
     for(let i = 0; i < 9; i++){
       const td = document.createElement('td');
       td.className = 'play';
@@ -427,11 +550,12 @@ function renderMembers(){
       chk.onchange = () => { 
         m.plays[i] = chk.checked; 
         saveAll(); 
-        renderPaymentSection(); // *** NEW: Update payment section after plays change ***
+        renderPaymentSection();
       };
       td.appendChild(chk);
       tr.appendChild(td);
     }
+
 
     // จัดการ
     const tdManage = document.createElement('td');
@@ -446,7 +570,6 @@ function renderMembers(){
       courts.forEach(c => {
         if(c.players && c.players.includes(m.id)) {
             c.players = c.players.filter(x => x !== m.id);
-            inPlayers.push(m.id); // เก็บ ID ไว้เผื่อต้องรีเซ็ตเวลาของคนอื่น
         }
         if(c.pending){
           const flat = c.pending.teams.flat();
@@ -458,7 +581,7 @@ function renderMembers(){
       // ไม่ต้องรีเซ็ต waitStartTime ของ m เพราะ m ถูกลบไปแล้ว
       
       saveAll();
-      renderAll(); // renderAll จะเรียก updateWaitTimes()
+      renderAll();
     };
     tdManage.appendChild(btnDel);
     tr.appendChild(tdManage);
@@ -472,8 +595,9 @@ function renderCourtElement(court) {
   el.className='court';
   el.dataset.courtId = court.id;
   
-  if(court.shuttlecocksCount === undefined) court.shuttlecocksCount = 0; // Initialize new property
+  if(court.shuttlecocksCount === undefined) court.shuttlecocksCount = 0;
 
+  // ... [Drag & Drop logic unchanged] ...
   el.draggable = true;
   el.ondragstart = (event) => {
     event.dataTransfer.setData('text/plain', court.id);
@@ -497,83 +621,65 @@ function renderCourtElement(court) {
     const targetCourt = courts.find(c => c.id === targetCourtId);
     
     if (sourceCourt && targetCourt) {
-      // Get players involved before swap
-      const sourceOldPlayers = sourceCourt.players || [];
-      const targetOldPlayers = targetCourt.players || [];
-      
-      // Swap players and pending
       const tempPlayers = sourceCourt.players;
       sourceCourt.players = targetCourt.players;
       targetCourt.players = tempPlayers;
       const tempPending = sourceCourt.pending;
       sourceCourt.pending = targetCourt.pending;
       targetCourt.pending = tempPending;
-      
-      // *** MODIFICATION: ไม่มีการรีเซ็ต wait time ที่เกิดจากการ Drag & Drop เพราะสถานะ players ไม่ได้เปลี่ยน ***
-      
       saveAll();
-      renderAll(); // Re-render all courts for simplicity on drop
+      renderAll();
     }
   };
+  // ... [End of Drag & Drop logic] ...
 
   const top = document.createElement('div'); top.style.display='flex'; top.style.justifyContent='space-between'; top.style.alignItems='center';
   
-  // *** START: MODIFICATION for Editable Court Name ***
+  // Editable Court Name
   const titleInput = document.createElement('input');
   titleInput.type = 'text';
   titleInput.value = court.name;
-  // Apply inline styles to make it look like a heading and match the theme
   titleInput.style.fontSize = '18px'; 
   titleInput.style.fontWeight = 'bold'; 
-  titleInput.style.width = '100px'; // Set a default width, user can type more
-  titleInput.style.padding = '4px 8px'; 
-  titleInput.style.borderRadius = '6px';
-  titleInput.style.border = '1px solid #333';
-  titleInput.style.backgroundColor = '#2d2d2d'; // Match court background
-  titleInput.style.color = '#e0e0e0';
-
+  titleInput.style.width = '100px'; 
+  
   titleInput.onchange = titleInput.onblur = () => {
     const newName = titleInput.value.trim();
     if (newName) {
       court.name = newName;
       saveAll();
-      titleInput.value = court.name; // Re-assign trimmed value
+      titleInput.value = court.name;
     } else {
-      // Revert to the last known non-empty name or a default
       const defaultName = `Court ${courts.findIndex(c => c.id === court.id) + 1}`;
       court.name = court.name || defaultName;
       titleInput.value = court.name;
       saveAll();
     }
   };
-  // *** END: MODIFICATION for Editable Court Name ***
   
   // Refactor controls section
   const controls = document.createElement('div');
   controls.style.display = 'flex'; 
   controls.style.gap = '6px';
   
-  // 1. Shuttlecock Controls Group (MODIFIED CODE)
+  // 1. Shuttlecock Controls Group 
   const shuttlecockGroup = document.createElement('div');
   shuttlecockGroup.style.display = 'flex';
   shuttlecockGroup.style.alignItems = 'center';
   shuttlecockGroup.style.gap = '4px';
 
-  const scDisplay = document.createElement('span'); // Display element for the count
+  const scDisplay = document.createElement('span'); 
   scDisplay.textContent = court.shuttlecocksCount;
   scDisplay.style.marginRight = '8px';
   scDisplay.style.fontWeight = 'bold';
   scDisplay.style.fontSize = '16px';
-  scDisplay.style.color = 'var(--accent)'; // Highlight the counter
+  scDisplay.style.color = 'var(--warning)'; // Use warning color for counter
 
   const btnShuttlecock = document.createElement('button');
   btnShuttlecock.textContent = 'ขอลูกเพิ่ม';
-  // *** MODIFICATION 1: Change color to Amber/Orange (#f59e0b) ***
-  btnShuttlecock.style.backgroundColor = '#f59e0b'; // Amber/Orange color for contrast
+  btnShuttlecock.style.backgroundColor = 'var(--warning)';
   
-  // *** MODIFICATION 2: Add Confirmation Dialog ***
   btnShuttlecock.onclick = () => {
-    // 1. Confirmation check
     if (!confirm(`ยืนยันการเพิ่มลูกแบด 1 ลูก สำหรับผู้เล่นในสนาม ${court.name} ?`)) {
         return;
     }
@@ -581,42 +687,37 @@ function renderCourtElement(court) {
     const playersPresent = court.players && court.players.length > 0;
 
     if (playersPresent) {
-        // 1. Increment court counter
         court.shuttlecocksCount += 1;
-        scDisplay.textContent = court.shuttlecocksCount; // Update court counter display immediately
+        scDisplay.textContent = court.shuttlecocksCount;
 
-        // 2. Increment player usage (+1 full ball per person)
         const usagePerPlayer = 1;
         court.players.forEach(pid => {
             const m = members.find(x => x.id === pid);
             if (m) {
-                // Add +1 to the stored value and ensure it remains an integer
                 m.shuttlecocksUsed = Math.round((m.shuttlecocksUsed || 0) + usagePerPlayer); 
             }
         });
 
-        // 3. Save and re-render members table to update "ลูกที่ใช้" column and payment section
         saveAll();
         renderMembers(); 
-        renderPaymentSection(); // *** Update payment section after shuttlecock change ***
+        renderPaymentSection(); 
     } else {
         alert('ไม่สามารถเพิ่มลูกได้: ไม่มีผู้เล่นอยู่ในสนาม');
     }
   };
 
-  shuttlecockGroup.appendChild(scDisplay); // Display BEFORE the button
+  shuttlecockGroup.appendChild(scDisplay);
   shuttlecockGroup.appendChild(btnShuttlecock);
-  controls.appendChild(shuttlecockGroup); // Add the new controls first
+  controls.appendChild(shuttlecockGroup);
   
   // 2. Arrangement Buttons 
-  // *** CHANGE: "จัดคนลง" -> "สุ่ม" *** (จากรอบที่แล้ว)
   const btnArrange = document.createElement('button'); 
   btnArrange.textContent='สุ่ม'; 
   btnArrange.onclick = ()=> arrangeForCourt(court.id);
   
   const btnManual = document.createElement('button');
   btnManual.textContent = 'จัดเอง';
-  btnManual.style.backgroundColor = '#22c55e'; // green
+  btnManual.style.backgroundColor = 'var(--success)'; 
   btnManual.onclick = () => manualAssign(court.id);
   
   const btnEmpty = document.createElement('button'); 
@@ -629,12 +730,12 @@ function renderCourtElement(court) {
     const oldPlayersIds = court.players || [];
     oldPlayersIds.forEach(pid => {
       const m = members.find(x => x.id === pid);
-      // เริ่มจับเวลาคนที่ว่างอีกครั้ง หากสถานะเป็น "มาแล้ว"
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที
       if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
     });
     
     court.players = []; court.pending = null; 
-    saveAll(); renderAll(); // The counter persists
+    saveAll(); renderAll(); 
   };
   
   const btnRemove = document.createElement('button'); 
@@ -648,7 +749,7 @@ function renderCourtElement(court) {
     const oldPlayersIds = court.players || [];
     oldPlayersIds.forEach(pid => {
       const m = members.find(x => x.id === pid);
-      // เริ่มจับเวลาคนที่ว่างอีกครั้ง หากสถานะเป็น "มาแล้ว"
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที
       if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
     });
     
@@ -657,15 +758,16 @@ function renderCourtElement(court) {
     renderAll(); 
   };
   
-  // Appending in the requested order: [Shuttlecock Group] -> [จัดเอง] -> [สุ่ม] -> [Empty] -> [Remove]
-  controls.appendChild(btnManual);  // จัดเอง
-  controls.appendChild(btnArrange); // สุ่ม
+  controls.appendChild(btnManual);
+  controls.appendChild(btnArrange);
   controls.appendChild(btnEmpty); 
   controls.appendChild(btnRemove);
   
-  top.appendChild(titleInput); top.appendChild(controls); // Use titleInput here
+  top.appendChild(titleInput); top.appendChild(controls); 
   el.appendChild(top);
 
+  // ... [Remaining Court rendering logic for players/pending unchanged, uses new CSS variables] ...
+  
   const info = document.createElement('div'); info.className='muted small'; info.style.marginTop='8px'; info.textContent='ผู้เล่นในสนาม:';
   el.appendChild(info);
 
@@ -699,7 +801,7 @@ function renderCourtElement(court) {
       const oldPendingIds = court.pending.teams.flat();
       oldPendingIds.forEach(pid => {
         const m = members.find(x => x.id === pid);
-        // เริ่มจับเวลาคนที่ว่างอีกครั้ง หากสถานะเป็น "มาแล้ว"
+        // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
         if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
       });
       
@@ -726,7 +828,7 @@ function renderCourtElement(court) {
 function renderCourts(){
   courtsGrid.innerHTML = '';
   if(courts.length === 0){
-    courtsGrid.innerHTML = '<div style="grid-column:1/-1;padding:10px;background:#1e1e1e;border-radius:8px;border:1px dashed #333;text-align:center;color:#b0b0b0">ยังไม่มีสนาม — เพิ่มสนามเพื่อเริ่มจัด</div>';
+    courtsGrid.innerHTML = '<div style="grid-column:1/-1;padding:10px;background:var(--card);border-radius:8px;border:1px dashed var(--divider);text-align:center;color:var(--text-muted)">ยังไม่มีสนาม — เพิ่มสนามเพื่อเริ่มจัด</div>';
     return;
   }
   courts.forEach(court => {
@@ -734,6 +836,7 @@ function renderCourts(){
   });
 }
 
+// ... [renderHistory, filterHistory, Helpers logic unchanged] ...
 function renderHistory(){
   if(matchHistory.length === 0){
     sortedHistoryRows = [];
@@ -746,17 +849,10 @@ function renderHistory(){
     map[key].count += 1;
     if(item.t > map[key].last) map[key].last = item.t;
   });
-  
-  // เก็บข้อมูลในตัวแปร sortedHistoryRows
   sortedHistoryRows = Object.values(map).sort((x,y)=>y.last - x.last);
-  
-  // เรียกใช้ filterHistory แทนการ render ตรงๆ
   filterHistory(); 
 }
 
-/**
- * ฟังก์ชันใหม่: กรองประวัติการจับคู่ตามชื่อที่ค้นหา
- */
 function filterHistory() {
     const searchTerm = document.getElementById('inputHistorySearch').value.toLowerCase().trim();
     historyList.innerHTML = '';
@@ -767,12 +863,9 @@ function filterHistory() {
     }
 
     const filteredRows = sortedHistoryRows.filter(r => {
-        if (!searchTerm) return true; // ถ้าไม่มีคำค้นหา ให้แสดงทั้งหมด
-        
+        if (!searchTerm) return true;
         const nameA = getMemberName(r.a).toLowerCase();
         const nameB = getMemberName(r.b).toLowerCase();
-        
-        // ค้นหาชื่อที่ตรงกับคำค้นหาใน A หรือ B
         return nameA.includes(searchTerm) || nameB.includes(searchTerm);
     });
     
@@ -784,7 +877,7 @@ function filterHistory() {
     filteredRows.forEach(r => {
         const div = document.createElement('div'); 
         div.style.padding='6px 0'; 
-        div.style.borderBottom='1px dashed #333';
+        div.style.borderBottom='1px dashed var(--divider)';
         
         const nameLine = document.createElement('div'); 
         nameLine.innerHTML = `<strong>${escapeHtml(getMemberName(r.a))}</strong> — <strong>${escapeHtml(getMemberName(r.b))}</strong>`;
@@ -798,15 +891,13 @@ function filterHistory() {
         historyList.appendChild(div);
     });
 }
-
-
-/* Helpers */
 function getMemberName(id){ const m = members.find(x=>x.id===id); return m ? m.name : '(หายไป)'; }
 function getMemberSkill(id){ const m = members.find(x=>x.id===id); return m ? m.skill : ''; }
 function pairKey(a,b){ return a < b ? `${a}|${b}` : `${b}|${a}`; }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
+/* End of Helpers */
 
-/* Arrange logic */
+/* Arrange logic (unchanged) */
 function tryMakeMatch(avail){
   if(avail.length < 4) return null;
   avail.forEach(a => a.playCount = (a.plays || []).filter(Boolean).length);
@@ -864,12 +955,8 @@ function arrangeForCourt(courtId){
   const match = tryMakeMatch(avail);
   if(!match){ alert('ไม่พบผู้เล่นที่ตรงเงื่อนไข (ลองเพิ่มสมาชิกหรือปรับระดับมือ)'); return; }
   
-  // *** MODIFICATION: ไม่มีการรีเซ็ต wait time เพราะผู้เล่นที่ถูกสุ่มลง pending ก็ยังอยู่ในสถานะ "รอ" ***
-  // ผู้เล่นจะถูกตัดเวลา "รอ" ก็ต่อเมื่อกด "ตกลง" เท่านั้น
-  
   court.pending = match;
   saveAll(); 
-  // Update only the court that was changed
   const oldCourtEl = courtsGrid.querySelector(`[data-court-id="${courtId}"]`);
   if (oldCourtEl) {
     courtsGrid.replaceChild(renderCourtElement(court), oldCourtEl);
@@ -890,7 +977,7 @@ function confirmArrangement(courtId){
       m.plays = m.plays || Array(9).fill(false);
       const idx = m.plays.findIndex(v=>v===false);
       if(idx >= 0) m.plays[idx] = true;
-      // *** MODIFICATION: ล้าง waitStartTime เมื่อเข้าสู่สถานะ confirmed players ***
+      // 1. เวลาหายไปทันที: เมื่อผู้เล่นอยู่ในสถานะ "players" อย่างเดียว
       m.waitStartTime = null; 
     }
   });
@@ -901,7 +988,7 @@ function confirmArrangement(courtId){
   court.players = ids;
   court.pending = null;
   saveAll();
-  renderAll(); // Keep renderAll for simplicity here, as other parts of the UI (member plays, wait times) change too
+  renderAll();
 }
 
 function recordPair(a,b){
@@ -909,17 +996,14 @@ function recordPair(a,b){
   pairHistory[key] = (pairHistory[key] || 0) + 1;
 }
 
-/* Replacement dialog: replace one position in pending */
+/* Replacement dialog: replace one position in pending (Wait time logic updated for rule 2) */
 function openReplaceDialog(courtId, teamIndex, memberIndex){
   const court = courts.find(c=>c.id===courtId);
   if(!court || !court.pending) return;
   
-  // Get all members currently confirmed in a court (court.players)
   const confirmedPlayersIds = getPlayersInCourtIds(); 
-  // Get all members in pending for *other* courts
   const otherPendingIds = new Set(courts.filter(c => c.id !== courtId).flatMap(c => c.pending ? c.pending.teams.flat() : []));
   
-  // Members who are either currently selected OR available (not confirmed AND not in other pending)
   const currentId = court.pending.teams[teamIndex][memberIndex];
   const candidates = members.filter(m => !confirmedPlayersIds.has(m.id) && (!otherPendingIds.has(m.id) || m.id === currentId));
   
@@ -939,8 +1023,8 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
 
   const box = document.createElement('div');
   box.style = `
-    background: #1e1e1e; padding: 20px; border-radius: 12px; min-width: 280px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: #e0e0e0;
+    background: var(--card); padding: 20px; border-radius: 12px; min-width: 280px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: var(--text-primary);
   `;
 
   const label = document.createElement('div');
@@ -950,13 +1034,11 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
 
   const select = document.createElement('select');
   select.style.width = '100%';
-  select.style.backgroundColor = '#2d2d2d';
-  select.style.color = '#e0e0e0';
+  select.style.backgroundColor = 'var(--input-bg)';
+  select.style.color = 'var(--text-primary)';
   candidates.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.id;
-    // Note: Wait time calculation in modal options is simplified and only for display
-    // เวลาที่แสดงคือเวลา "รอ" จริง
     const statusText = c.status === 'มาแล้ว' ? `รอ ${c.waitStartTime ? formatTime(Math.floor((Date.now() - c.waitStartTime) / 1000)) : '00:00:00'}` : 'ยังไม่มา';
     opt.textContent = `${c.name} (${c.skill} | ${statusText})`;
     if (c.id === currentId) {
@@ -972,6 +1054,7 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
 
   const btnCancel = document.createElement('button');
   btnCancel.textContent = 'ยกเลิก';
+  btnCancel.className = 'gray';
   btnCancel.style.marginRight = '10px';
   btnCancel.onclick = () => document.body.removeChild(modal);
 
@@ -981,30 +1064,27 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
     const chosenId = select.value;
     const oldId = court.pending.teams[teamIndex][memberIndex];
     
-    // *** MODIFICATION: รีเซ็ตเวลาสำหรับผู้เล่นที่ถูกแทนที่ทันที ***
+    // *** MODIFICATION: รีเซ็ตเวลาสำหรับผู้เล่นที่ถูกแทนที่ทันที (Rule 2) ***
     if (oldId !== chosenId) {
       const oldMember = members.find(m => m.id === oldId); 
-      const newMember = members.find(m => m.id === chosenId);
       
-      // ผู้เล่นที่ถูกแทนที่ออกไป ให้เริ่มจับเวลา "รอ" ใหม่ หากสถานะเป็น "มาแล้ว"
+      // ผู้เล่นที่ถูกแทนที่ออกไป ให้เริ่มจับเวลา "รอ" ใหม่ หากสถานะเป็น "มาแล้ว" และไม่ได้เข้าสนามที่ยืนยันแล้ว
       if (oldMember && oldMember.status === 'มาแล้ว') {
-        // ต้องตรวจสอบว่าผู้เล่นคนนี้ไม่ได้อยู่ใน pending ของคนอื่น
         const isOldPlayerInOtherPending = courts.some(c => c.id !== courtId && (c.pending && c.pending.teams.flat().includes(oldId)));
         const isOldPlayerInOtherConfirmed = getPlayersInCourtIds().has(oldId);
         
         if (!isOldPlayerInOtherPending && !isOldPlayerInOtherConfirmed) {
             oldMember.waitStartTime = Date.now();
+        } else {
+            // ถ้าไปอยู่ pending/players อื่น ให้เวลาหายไป
+            oldMember.waitStartTime = null;
         }
       }
-      
-      // ผู้เล่นใหม่ที่เข้ามาใน pending ไม่ต้องทำอะไร เพราะเขาอยู่ในสถานะ "รอ" อยู่แล้ว
-      // หากเขามาจากสถานะ "confirmed players" เวลาจะถูก null ไปเองเมื่อเขากลับเข้าสู่ pending
     }
     
     court.pending.teams[teamIndex][memberIndex] = chosenId;
     saveAll();
     
-    // Replace just the court element instead of re-rendering everything
     const oldCourtEl = courtsGrid.querySelector(`[data-court-id="${courtId}"]`);
     if (oldCourtEl) {
       courtsGrid.replaceChild(renderCourtElement(court), oldCourtEl);
@@ -1013,7 +1093,7 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
     }
     
     document.body.removeChild(modal);
-    updateWaitTimes(); // Trigger time update
+    updateWaitTimes();
   };
 
   btnRow.appendChild(btnCancel);
@@ -1024,13 +1104,11 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
   document.body.appendChild(modal);
 }
 
-// --- START: Manual Assign function ---
+// --- START: Manual Assign function (Wait time logic updated for rule 2) ---
 function manualAssign(courtId){
   const court = courts.find(c=>c.id===courtId);
-  const inCourtIds = getPlayersInCourtIds(); // IDs ที่อยู่ใน confirmed players
-  const inPendingIds = new Set(courts.flatMap(c => c.pending ? c.pending.teams.flat() : []));
+  const inCourtIds = getPlayersInCourtIds(); 
   
-  // Changed: Allow all members who are not in a confirmed court to be available
   const avail = members.filter(m => !inCourtIds.has(m.id));
   if(avail.length < 4){ alert('ต้องมีผู้เล่นอย่างน้อย 4 คนที่ยังว่าง หรืออยู่ใน pending เท่านั้น'); return; }
 
@@ -1044,8 +1122,8 @@ function manualAssign(courtId){
   modal.classList.add('time-modal');
   const box = document.createElement('div');
   box.style = `
-    background: #1e1e1e; padding: 20px; border-radius: 12px; min-width: 400px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: #e0e0e0;
+    background: var(--card); padding: 20px; border-radius: 12px; min-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: var(--text-primary);
   `;
   const title = document.createElement('div');
   title.textContent = 'เลือกผู้เล่น 4 คน';
@@ -1058,7 +1136,6 @@ function manualAssign(courtId){
     selects.forEach(sel => {
       const selectedValue = sel.value;
       
-      // กรองตัวเลือก: ให้เลือกได้เฉพาะคนที่ยังไม่ได้เลือก + คนที่ถูกเลือกอยู่แล้ว (รวม pending)
       const optionsHtml = avail.filter(m => !chosenIds.has(m.id) || m.id === selectedValue)
                                .map(m => {
                                   // เวลาที่แสดงคือเวลา "รอ" จริง
@@ -1069,7 +1146,6 @@ function manualAssign(courtId){
     });
   }
   
-  // New team-based structure
   const teamsContainer = document.createElement('div');
   teamsContainer.style.display = 'flex';
   teamsContainer.style.gap = '20px'; 
@@ -1084,8 +1160,8 @@ function manualAssign(courtId){
       const sel = document.createElement('select');
       sel.style.width = '100%';
       sel.style.marginBottom = '8px';
-      sel.style.backgroundColor = '#2d2d2d';
-      sel.style.color = '#e0e0e0';
+      sel.style.backgroundColor = 'var(--input-bg)';
+      sel.style.color = 'var(--text-primary)';
       sel.onchange = updateSelectOptions;
       selects.push(sel);
       teamBox.appendChild(sel);
@@ -1093,17 +1169,18 @@ function manualAssign(courtId){
     return teamBox;
   }
   
-  teamsContainer.appendChild(createTeamSelects('A', 2)); // selects[0], selects[1]
-  teamsContainer.appendChild(createTeamSelects('B', 2)); // selects[2], selects[3]
+  teamsContainer.appendChild(createTeamSelects('A', 2));
+  teamsContainer.appendChild(createTeamSelects('B', 2));
   box.appendChild(teamsContainer);
 
-  updateSelectOptions(); // Initial render
+  updateSelectOptions();
 
   const btnRow = document.createElement('div');
   btnRow.style.textAlign = 'right';
   btnRow.style.marginTop = '10px';
   const btnCancel = document.createElement('button');
   btnCancel.textContent = 'ยกเลิก';
+  btnCancel.className = 'gray';
   btnCancel.style.marginRight = '10px';
   btnCancel.onclick = ()=> document.body.removeChild(modal);
   const btnOk = document.createElement('button');
@@ -1112,22 +1189,19 @@ function manualAssign(courtId){
     const chosen = selects.map(s=>s.value);
     if(new Set(chosen).size < 4){ alert('ห้ามเลือกชื่อซ้ำ'); return; }
 
-    // *** MODIFICATION: จัดการเวลาของผู้เล่นที่อยู่ใน pending เดิมแล้วถูกเอาออก ***
+    // *** MODIFICATION: จัดการเวลาของผู้เล่นที่อยู่ใน pending เดิมแล้วถูกเอาออก (Rule 2) ***
     const oldPendingIds = court.pending ? court.pending.teams.flat() : [];
     
     // ผู้เล่นที่อยู่ใน pending เดิม และไม่ได้ถูกเลือกเข้ามาใน pending ใหม่ ให้เริ่มจับเวลา "รอ"
     oldPendingIds.filter(pid => !chosen.includes(pid)).forEach(pid => {
       const m = members.find(x => x.id === pid);
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
       if (m && m.status === 'มาแล้ว' && !inCourtIds.has(pid)) m.waitStartTime = Date.now();
     });
     
-    // ผู้เล่นที่ถูกเลือกเข้ามา (chosen) ไม่ต้องทำอะไร เพราะสถานะ "รอ" ของเขายังคงทำงานอยู่
-    
-    // Assign based on the order they were pushed: [A1, A2, B1, B2]
     court.pending = { teams: [[chosen[0], chosen[1]], [chosen[2], chosen[3]]] };
 
     saveAll(); 
-    // Replace just the court element instead of re-rendering everything
     const oldCourtEl = courtsGrid.querySelector(`[data-court-id="${courtId}"]`);
     if (oldCourtEl) {
       courtsGrid.replaceChild(renderCourtElement(court), oldCourtEl);
@@ -1136,7 +1210,7 @@ function manualAssign(courtId){
     }
     
     document.body.removeChild(modal);
-    updateWaitTimes(); // Trigger time update
+    updateWaitTimes();
   };
   btnRow.appendChild(btnCancel);
   btnRow.appendChild(btnOk);
@@ -1146,7 +1220,7 @@ function manualAssign(courtId){
 }
 // --- END: Manual Assign function ---
 
-/* Export CSV for history (pair counts) */
+/* Export CSV for history (unchanged) */
 function exportCSV(){
   const map = {};
   matchHistory.forEach(item => {
@@ -1163,23 +1237,16 @@ function exportCSV(){
   const a = document.createElement('a'); a.href = url; a.download = 'pair_history.csv'; a.click(); URL.revokeObjectURL(url);
 }
 
-// ****************************************************
-// *** PAYMENT CALCULATION LOGIC ***
-// ****************************************************
-
+// ... [Payment calculation and rendering logic (unchanged, uses new CSS variables)] ...
 function calculateEqualShare() {
   const data = calcData.equal;
   const presentMembers = getPresentMembers();
   const numPresent = presentMembers.length;
-
-  // Use parseFloat for calculation but default to 0
   const courtCost = parseFloat(data.courtCost) || 0;
   const shuttlecockCost = parseFloat(data.shuttlecockCost) || 0;
   const totalShuttlecocks = parseFloat(data.totalShuttlecocks) || 0;
-
   const totalExpense = courtCost + (shuttlecockCost * totalShuttlecocks);
   const expensePerPerson = numPresent > 0 ? totalExpense / numPresent : 0;
-  
   return {
     totalExpense: totalExpense.toFixed(2),
     expensePerPerson: expensePerPerson.toFixed(2),
@@ -1208,37 +1275,27 @@ function renderEqualShare() {
       </div>
     </div>
 
-    <div style="padding: 10px; background: #2d2d2d; border-radius: 8px;">
+    <div style="padding: 10px; background: var(--payment-box-bg); border-radius: 8px;">
         <div class="small muted">สมาชิกที่มาแล้ว: <strong>${results.numPresent} คน</strong></div>
-        <div style="margin-top: 4px;">รายจ่ายทั้งหมด: <strong style="color: #60a5fa;">${results.totalExpense} บาท</strong></div>
+        <div style="margin-top: 4px;">รายจ่ายทั้งหมด: <strong style="color: var(--accent);">${results.totalExpense} บาท</strong></div>
         <div style="font-size: 1.2em; margin-top: 6px;">
-            **หารต่อคน: <strong style="color: #4ade80;">${results.expensePerPerson} บาท</strong>**
+            **หารต่อคน: <strong style="color: var(--success);">${results.expensePerPerson} บาท</strong>**
         </div>
     </div>
   `;
   container.innerHTML = html;
 }
 
-/**
- * *** ฟังก์ชันที่ถูกแก้ไขตามคำขอใหม่: ไม่หาร/แบ่งสัดส่วนใดๆ และรวมค่าสนามเข้าไปในรายจ่ายต่อคน ***
- */
 function calculatePerShuttlecockShare() {
   const data = calcData.shuttlecock;
   const presentMembers = getPresentMembers();
-
   const courtCost = parseFloat(data.courtCost) || 0;
   const shuttlecockCost = parseFloat(data.shuttlecockCost) || 0;
-
-  // 1. Calculate Total Shuttlecocks Used by all present members (for summary display only)
   const totalShuttlecocksUsed = presentMembers.reduce((sum, m) => sum + (Math.round(m.shuttlecocksUsed || 0)), 0);
 
-  // 2. Calculate Individual Expense based on the new, simpler formula:
-  //    รายจ่ายต่อคน = ค่าสนามรวม + (จำนวนลูกที่คนนั้นใช้ x ค่าลูกต่อลูก)
   const results = presentMembers.map(m => {
     const numPlays = (m.plays || []).filter(Boolean).length;
     const numShuttlecocks = Math.round(m.shuttlecocksUsed || 0);
-    
-    // Formula application: Court Cost + (Individual SCs * SC Cost)
     const memberShuttlecockExpense = numShuttlecocks * shuttlecockCost;
     const totalMemberExpense = courtCost + memberShuttlecockExpense;
     
@@ -1246,21 +1303,18 @@ function calculatePerShuttlecockShare() {
       name: m.name,
       numPlays: numPlays,
       numShuttlecocks: numShuttlecocks,
-      // Format the total expense for display
       expense: totalMemberExpense.toFixed(2),
       warning: '' 
     };
-  }).sort((a, b) => parseFloat(b.expense) - parseFloat(a.expense)); // Sort by expense
+  }).sort((a, b) => parseFloat(b.expense) - parseFloat(a.expense));
 
-  // Calculate the grand total for the summary box
   const totalShuttlecockExpense = totalShuttlecocksUsed * shuttlecockCost;
-  const totalCombinedExpense = courtCost * presentMembers.length + totalShuttlecockExpense; // NOTE: The "combined" total here is for informational display, assuming everyone pays the court cost in their individual total.
+  const totalCombinedExpense = courtCost * presentMembers.length + totalShuttlecockExpense;
 
   return { 
-    totalShuttlecocksUsed: totalShuttlecocksUsed, // For display
-    courtCostTotal: courtCost.toFixed(2), // Total court cost for display
-    totalShuttlecockExpense: totalShuttlecockExpense.toFixed(2), // Total SC cost for display
-    // IMPORTANT: The following is for comparison/info only, based on everyone paying court cost
+    totalShuttlecocksUsed: totalShuttlecocksUsed,
+    courtCostTotal: courtCost.toFixed(2),
+    totalShuttlecockExpense: totalShuttlecockExpense.toFixed(2), 
     totalCombinedExpense: totalCombinedExpense.toFixed(2), 
     results: results,
     numPresent: presentMembers.length
@@ -1286,10 +1340,10 @@ function renderPerShuttlecockShare() {
         </div>
     </div>
     
-    <div style="padding: 10px; background: #2d2d2d; border-radius: 8px; margin-bottom: 12px;">
+    <div style="padding: 10px; background: var(--payment-box-bg); border-radius: 8px; margin-bottom: 12px;">
         <div class="small muted">สมาชิกที่มาแล้ว: <strong>${results.numPresent} คน</strong></div>
-        <div style="margin-top: 4px;">ค่าสนามรวม: <strong style="color: #f59e0b;">${results.courtCostTotal} บาท</strong></div>
-        <div style="margin-top: 4px;">ค่าลูกรวม: <strong style="color: #60a5fa;">${results.totalShuttlecockExpense} บาท</strong> (จาก ${results.totalShuttlecocksUsed} ลูก)</div>
+        <div style="margin-top: 4px;">ค่าสนามรวม: <strong style="color: var(--warning);">${results.courtCostTotal} บาท</strong></div>
+        <div style="margin-top: 4px;">ค่าลูกรวม: <strong style="color: var(--accent);">${results.totalShuttlecockExpense} บาท</strong> (จาก ${results.totalShuttlecocksUsed} ลูก)</div>
         <div class="muted small" style="margin-top: 4px;">
             *การคำนวณ: รายจ่ายต่อคน = ค่าสนามรวม + (จำนวนลูกที่ใช้ x ค่าลูกต่อลูก)
         </div>
@@ -1311,7 +1365,7 @@ function renderPerShuttlecockShare() {
                         <td style="text-align: right;">${r.numPlays}</td>
                         <td style="text-align: right;">${r.numShuttlecocks}</td>
                         <td style="text-align: right;">
-                            <strong style="color: #4ade80;">${r.expense} บาท</strong>
+                            <strong style="color: var(--success);">${r.expense} บาท</strong>
                         </td>
                     </tr>
                 `).join('')}
@@ -1322,13 +1376,9 @@ function renderPerShuttlecockShare() {
   container.innerHTML = html;
 }
 
-// Global function for input handling (called from onchange)
 window.updateCalcData = function(mode, key, value) {
-  // Store the actual input value
   calcData[mode][key] = value; 
   saveAll(); 
-  
-  // Re-render the current mode content to update results instantly
   if (calcData.mode === 'equal') {
     renderEqualShare();
   } else {
@@ -1336,7 +1386,6 @@ window.updateCalcData = function(mode, key, value) {
   }
 }
 
-// Global function for button handling (called from onclick)
 window.setPaymentMode = function(mode) {
   calcData.mode = mode;
   saveAll();
@@ -1347,13 +1396,11 @@ function renderPaymentSection() {
   const btnEq = document.getElementById('btnModeEqual');
   const btnSC = document.getElementById('btnModeShuttlecock');
   
-  if (!btnEq || !btnSC) return; // Check if the section exists
+  if (!btnEq || !btnSC) return;
 
-  // Toggle button styles
-  btnEq.style.backgroundColor = calcData.mode === 'equal' ? '#4ade80' : '#475569'; // light green or gray
-  btnSC.style.backgroundColor = calcData.mode === 'shuttlecock' ? '#4ade80' : '#475569'; // light green or gray
+  btnEq.style.backgroundColor = calcData.mode === 'equal' ? 'var(--success)' : 'var(--gray-button)'; 
+  btnSC.style.backgroundColor = calcData.mode === 'shuttlecock' ? 'var(--success)' : 'var(--gray-button)'; 
   
-  // Render content based on mode
   if (calcData.mode === 'equal') {
     renderEqualShare();
   } else {
@@ -1361,16 +1408,14 @@ function renderPaymentSection() {
   }
 }
 
-// ****************************************************
-// *** END: NEW PAYMENT CALCULATION LOGIC ***
-// ****************************************************
+// ... [End of Payment calculation and rendering logic] ...
 
 
 function renderAll(){ 
   renderMembers(); 
   renderCourts(); 
   renderHistory();
-  renderPaymentSection(); // *** NEW CALL ***
+  renderPaymentSection();
 }
 
 /* Buttons wiring */
@@ -1378,7 +1423,6 @@ document.getElementById('btnAdd').onclick = ()=>{
   const nameEl = document.getElementById('inputName'); const skillEl = document.getElementById('inputSkill');
   const name = (nameEl.value || '').trim(); const skill = skillEl.value;
   if(!name) return alert('กรุณากรอกชื่อ');
-  // Initialized with shuttlecocksUsed: 0
   members.push({ id: uid(), name, skill, plays: Array(9).fill(false), status: 'ยังไม่มา', shuttlecocksUsed: 0 });
   nameEl.value = ''; skillEl.value = 'กลาง';
   saveAll(); renderAll();
@@ -1391,7 +1435,6 @@ document.getElementById('btnReset').onclick = ()=>{
 
 document.getElementById('btnAddCourt').onclick = ()=>{
   const el = document.getElementById('inputCourt'); const name = (el.value || '').trim() || ('Court ' + (courts.length+1));
-  // Initialize new shuttlecocksCount property
   courts.push({ id: uid(), name, players: [], pending: null, shuttlecocksCount: 0 });
   el.value = ''; saveAll(); renderAll();
 };
@@ -1409,12 +1452,13 @@ setInterval(updateWaitTimes, 1000);
 
 /* Expose for debugging in console if needed */
 window._bm = { members, courts, pairHistory, matchHistory, renderAll, calcData };
-window.filterHistory = filterHistory; // Expose filter function
+window.filterHistory = filterHistory;
+window.toggleTheme = toggleTheme; // Expose for accessibility/manual testing
 
 </script>
 </body>
 <div style="text-align:center; margin: 20px 0;">
-  <p style="margin-bottom:10px; font-weight:bold; color:#e0e0e0;">
+  <p style="margin-bottom:10px; font-weight:bold; color:var(--text-primary);">
     มาพูดคุยกันได้ อยากให้เพิ่มหรือแก้ไขระบบไหน
   </p>
   <a href="https://line.me/R/ti/g/xLRTuA8T8G" target="_blank"
