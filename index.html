@@ -472,6 +472,58 @@
 .tab-section.active{display:block}
 </style>
 
+
+<style id="desktop-2col-courts">
+/* ✅ Desktop only: 2 columns and bigger court cards */
+@media (min-width: 1024px){
+  #courtsGrid{
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 4 -> 2 */
+    gap: 20px !important;                              /* bigger spacing */
+    margin-top: 14px;
+  }
+
+  .court{
+    padding: 20px !important;        /* bigger card */
+    font-size: 16px !important;
+  }
+
+  .court h3{
+    font-size: 18px !important;      /* bigger title */
+  }
+
+  .court button{
+    padding: 10px 14px !important;  /* bigger buttons */
+    font-size: 14px !important;
+  }
+}
+</style>
+
+
+<style id="member-spacing-fix">
+/* ✅ Spacing for member list (desktop & mobile) */
+#membersCard table tbody tr{
+  border-bottom: 12px solid transparent; /* vertical spacing between rows */
+}
+
+#membersCard table tbody td{
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+/* Extra spacing on desktop for clarity */
+@media (min-width: 1024px){
+  #membersCard table tbody tr{
+    border-bottom: 16px solid transparent;
+  }
+
+  #membersCard table tbody td{
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+}
+</style>
+
 </head>
 <body data-theme="dark">
 
