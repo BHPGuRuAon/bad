@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ระบบจัดก๊วนตีแบด — พร้อมประวัติ & แก้เฉพาะคน</title>
+<style>
+  /* ****************************************************** */
+  /* *** การแก้ไขใหม่: Light/Dark Mode CSS Variables *** */
+  /* ****************************************************** */
+  
+  /* DARK MODE (Default) */
+  :root[data-theme="dark"] {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-muted: #b0b0b0;
+    --input-bg: #2d2d2d;
+    --input-border: #333;
+    --accent: #2563eb; /* Blue */
+    --success: #22c55e; /* Green */
+    --warning: #f59e0b; /* Amber */
+    --danger: #ef4444; /* Red */
+    --pending-bg: #332d1e;
+    --pending-border: #554422;
+    --divider: #333;
+    --gray-button: #6b7280;
+    --payment-box-bg: #2d2d2d;
+  }
+
+  /* LIGHT MODE */
+  :root[data-theme="light"] {
+    --bg: #f4f4f5; /* Zinc 100 */
+    --card: #ffffff;
+    --text-primary: #18181b; /* Zinc 900 */
+    --text-muted: #71717a; /* Zinc 500 */
+    --input-bg: #ffffff;
+    --input-border: #e4e4e7; /* Zinc 200 */
+    --accent: #3b82f6; /* Blue */
+    --success: #16a34a; /* Green */
+    --warning: #f97316; /* Orange */
+    --danger: #dc2626; /* Red */
+    --pending-bg: #fef3c7; /* Amber 100 */
+    --pending-border: #fcd34d; /* Amber 300 */
+    --divider: #e4e4e7;
+    --gray-button: #9ca3af;
+    --payment-box-bg: #f5f5f5;
+  }
+  
+  /* Apply variables */
+  *{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+  body{
+      margin:0;
+      background:var(--bg);
+      padding:18px;
+      color:var(--text-primary); /* ใช้สีตัวอักษรหลัก */
+      transition: background-color 0.3s, color 0.3s;
+  } 
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  h1{font-size:20px;margin:0}
+  .card{
+      background:var(--card);
+      padding:14px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.15); /* ปรับเงาให้เข้าได้ทั้งสองธีม */
+      margin-bottom:12px
+  } 
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  input[type="text"], input[type="number"], select{
+      padding:8px;
+      border-radius:8px;
+      border:1px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-primary); /* ใช้สีตัวอักษรหลัก */
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  button{
+      padding:8px 10px;
+      border-radius:8px;
+      border:0;
+      background:var(--accent);
+      color:white;
+      cursor:pointer;
+      transition: background-color 0.2s;
+  }
+  button.gray{background:var(--gray-button)}
+  button.red{background:var(--danger)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+  th,td{
+      padding:8px;
+      border-bottom:1px solid var(--divider); /* ใช้สีเส้นขอบตาราง */
+      text-align:left;
+      vertical-align:middle
+  } 
+  th.play, td.play{width:34px;text-align:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px}
+  .court{
+      padding:12px;
+      border-radius:10px;
+      background:var(--input-bg); /* ใช้สีพื้นหลังของ input */
+      border:1px solid var(--input-border);
+      transition: all 0.2s ease-in-out;
+  } 
+  .muted{color:var(--text-muted);font-size:13px}
+  .small{font-size:12px}
+  .players{margin-top:8px}
+  .player-line{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+  .pending{
+      background:var(--pending-bg);
+      padding:8px;
+      border-radius:8px;
+      border:1px solid var(--pending-border);
+      margin-top:8px;
+      color: var(--text-primary);
+  } 
+  .court.dragging { opacity: 0.5; }
+  .court.drag-over { border: 2px dashed var(--accent); }
+  
+  /* Specific styling for court name input to match the background/theme */
+  .court input[type="text"] {
+    background-color: transparent !important; /* Make court name input transparent */
+    border: 0 !important;
+    padding: 0 !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* Status Select Styling */
+  .status-select-มาแล้ว { background-color: var(--success) !important; color: white !important; }
+  .status-select-ยังไม่มา { background-color: var(--danger) !important; color: white !important; }
+
+  /* Payment Section Styling */
+  #paymentModeContent > div:last-child {
+      background: var(--payment-box-bg); /* Use a slightly different background for the summary box */
+      padding: 10px; 
+      border-radius: 8px;
+  }
+  
+  /* ****************************************************** */
+  /* *** Media Queries and other existing styles *** */
+  /* ****************************************************** */
+  
+  /* NEW/MODIFIED: Rule for mobile landscape / small tablets (641px to 1024px) */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    /* Table Adjustments */
+    #membersTable {
+      min-width: unset !important; 
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    /* Override inline th styles for better landscape fit */
+    #membersTable thead th:nth-child(1),
+    #membersTable tbody td:nth-child(1) { width: 40px !important; } /* ลำดับ */
+
+    #membersTable thead th:nth-child(2),
+    #membersTable tbody td:nth-child(2) { 
+        width: 80px !important; /* ชื่อ */
+        min-width: 80px !important;
+    }
+
+    #membersTable thead th:nth-child(3),
+    #membersTable tbody td:nth-child(3) { width: 100px !important; } /* ระดับมือ */
+    
+    /* MODIFIED: Columns 4 (รอ), 5 (สถานะ) now 50px */
+    #membersTable th:nth-child(4),
+    #membersTable tbody td:nth-child(4),
+    #membersTable th:nth-child(5),
+    #membersTable tbody td:nth-child(5) {
+      width: 50px !important; 
+    }
+    
+    /* Column 6 (ลงสนาม) now 50px */
+    #membersTable th:nth-child(6), /* ลงสนาม */
+    #membersTable tbody td:nth-child(6) {
+      width: 50px !important; 
+    }
+    
+    /* Column 7 (ลูกที่ใช้) is increased to 70px for input visibility */
+    #membersTable th:nth-child(7), /* ลูกที่ใช้ */
+    #membersTable tbody td:nth-child(7) {
+      width: 70px !important; 
+    }
+    
+    /* Columns 8-16 (1-9 checkboxes) now 15px */
+    /* REMOVED CHECKBOX COLUMNS */
+    
+    /* MODIFIED: Column 17 (จัดการ) now 70px */
+    #membersTable thead th:nth-child(8),
+    #membersTable tbody td:nth-child(8) { width: 70px !important; } 
+
+    /* Input/Select Adjustments */
+    #membersTable input[type="text"] {
+        font-size: 13px;
+    }
+    
+    #membersTable select {
+        font-size: 11px;
+        padding: 4px 2px;
+    }
+    
+    #paymentModeContent #scTable {
+        min-width: unset !important;
+    }
+
+    /* Court Control Adjustments (NEW/MODIFIED) */
+    .court > div:first-child {
+        flex-direction: column; /* เรียงจากบนลงล่าง เพื่อให้มีพื้นที่มากขึ้น */
+        align-items: flex-start;
+        gap: 8px; /* เพิ่มช่องว่างระหว่างส่วนชื่อและส่วนปุ่ม */
+    }
+    
+    /* Input Court Name (to take up full width) */
+    .court input[type="text"] {
+        width: 100px !important; /* กำหนดความกว้างตามปกติ */
+        font-size: 16px !important;
+    }
+    
+    /* Controls container to spread out */
+    .court .controls-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 4px; /* ช่องว่างระหว่างกลุ่มปุ่ม */
+        flex-wrap: wrap; /* ให้ปุ่มลงบรรทัดใหม่ได้ถ้าจำเป็น */
+    }
+    
+    /* Shuttlecock Group (number + button) */
+    .court .shuttlecock-group {
+        display: flex;
+        align-items: center;
+        gap: 4px; 
+    }
+    .court .shuttlecock-group .shuttlecock-display {
+        font-size: 14px;
+        margin-right: 0;
+    }
+    
+    /* Individual Buttons in court */
+    .court button {
+      padding: 5px 8px !important; /* ลดขนาดปุ่ม */
+      font-size: 12px !important;
+      white-space: nowrap;
+      flex-grow: 1; /* ให้ปุ่มขยายตัวเท่าๆ กันในกลุ่มปุ่ม */
+    }
+    
+    /* Manual/Arrange/Empty/Remove Group */
+    .court .action-buttons {
+        display: flex;
+        gap: 4px;
+        flex-grow: 1; /* ให้กลุ่มปุ่มขยายตัวเท่าๆ กัน */
+        min-width: 170px; /* ป้องกันการหดตัวมากเกินไป */
+    }
+    .court .action-buttons button {
+        flex: 1 1 0; /* ปุ่มขยายตัวเต็มที่ในกลุ่ม */
+        margin-left: 0 !important;
+    }
+  }
+
+
+  @media(max-width:640px){
+    th,td{font-size:12px} 
+    h1{font-size:18px}
+    #membersTable {
+        min-width: 900px;
+    }
+    
+    /* NEW/MODIFIED: Minimized column widths for portrait to reduce horizontal scroll distance */
+    #membersTable thead th:nth-child(1), #membersTable tbody td:nth-child(1) { width: 40px !important; } /* ลำดับ */
+    #membersTable thead th:nth-child(2),
+    #membersTable tbody td:nth-child(2) {
+      display: table-cell;
+      min-width: 120px;
+    }
+    #membersTable thead th:nth-child(3), #membersTable tbody td:nth-child(3) { width: 100px !important; } /* ระดับมือ */
+    #membersTable th:nth-child(4), #membersTable tbody td:nth-child(4) { width: 60px !important; } /* รอ (Minimized) */
+    #membersTable th:nth-child(5), #membersTable tbody td:nth-child(5) { width: 80px !important; } /* สถานะ */
+    #membersTable th:nth-child(6), #membersTable tbody td:nth-child(6) { width: 40px !important; } /* ลงสนาม (Minimized) */
+    #membersTable th:nth-child(7), #membersTable tbody td:nth-child(7) { width: 60px !important; } /* ลูกที่ใช้ (Minimized) */
+
+    /* Columns 8-16 (1-9 checkboxes) now 25px */
+    /* REMOVED CHECKBOX COLUMNS */
+    
+    #membersTable th:nth-child(8), #membersTable tbody td:nth-child(8) { width: 70px !important; } /* จัดการ */
+    
+    /* ... rest of the portrait CSS ... */
+    #paymentModeContent #scTable {
+        min-width: unset !important;
+        table-layout: fixed;
+        width: 100%;
+    }
+    #paymentModeContent #scTable th, #paymentModeContent #scTable td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 6px 4px;
+    }
+    #paymentModeContent #scTable th:nth-child(1), #paymentModeContent #scTable td:nth-child(1) { width: 40%; }
+    #paymentModeContent #scTable th:nth-child(2), #paymentModeContent #scTable td:nth-child(2) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(3), #paymentModeContent #scTable td:nth-child(3) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(4), #membersTable td:nth-child(4) { width: 30%; }
+    .court > div:first-child {
+        flex-wrap: nowrap;
+    }
+    .court > div:first-child > div:last-child {
+        gap: 4px;
+    }
+    .court button {
+      padding: 4px 6px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .court input[type="text"] {
+        width: 70px !important;
+        padding: 4px 6px !important;
+        font-size: 16px !important;
+    }
+  }
+  .history-scroll {
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+
+	/* ****************************************************** */
+  /* *** แก้ไขส่วนตารางสมาชิกสำหรับมือถือแนวตั้ง (max-width:640px) *** */
+  /* ****************************************************** */
+  @media(max-width:640px){
+    th,td{font-size:12px; padding: 4px;} /* ลด padding เพื่อให้มีพื้นที่มากขึ้น */
+    h1{font-size:18px}
+    
+    /* 1. บังคับให้ตารางปรับขนาดตามหน้าจอและนำ min-width ออก */
+    #membersTable {
+        min-width: unset !important; /* ลบ min-width ที่ทำให้เกิดการเลื่อน */
+        width: 100%;
+        table-layout: fixed; /* บังคับให้ตารางใช้ความกว้างที่กำหนด */
+        overflow: hidden; 
+    }
+
+    /* 2. ปรับขนาดคอลัมน์ให้เล็กลงมากที่สุดเพื่อให้อยู่ในหน้าจอมือถือแนวตั้ง (~360px) */
+    
+    /* ลำดับ (Index) */
+    #membersTable thead th:nth-child(1), 
+    #membersTable tbody td:nth-child(1) { width: 30px !important; } 
+    
+    /* ชื่อ (Name) - ให้พื้นที่มากที่สุดที่สามารถทำได้ */
+    #membersTable thead th:nth-child(2), 
+    #membersTable tbody td:nth-child(2) { 
+      width: 80px !important; 
+      min-width: 80px !important; 
+      display: table-cell;
+    } 
+    
+    /* ระดับมือ (Skill) */
+    #membersTable thead th:nth-child(3), 
+    #membersTable tbody td:nth-child(3) { width: 80px !important; } 
+    
+    /* รอ (Wait Time) */
+    #membersTable th:nth-child(4), 
+    #membersTable tbody td:nth-child(4) { width: 40px !important; } 
+    
+    /* สถานะ (Status) */
+    #membersTable th:nth-child(5), 
+    #membersTable tbody td:nth-child(5) { width: 60px !important; } 
+    
+    /* ลงสนาม (Games Played) */
+    #membersTable th:nth-child(6), 
+    #membersTable tbody td:nth-child(6) { width: 30px !important; } 
+    
+    /* ลูกที่ใช้ (Shuttlecocks Used) */
+    #membersTable th:nth-child(7), 
+    #membersTable tbody td:nth-child(7) { width: 30px !important; } 
+
+    /* จัดการ (Manage) */
+    #membersTable th:nth-child(8), 
+    #membersTable tbody td:nth-child(8) { width: 30px !important; } 
+    
+    /* 3. ปรับขนาด Input/Select/Button ภายในตารางให้เล็กลงตามคอลัมน์ใหม่ */
+    #membersTable input[type="text"],
+    #membersTable input[type="number"],
+    #membersTable select {
+        font-size: 11px;
+        padding: 2px;
+        height: 20px;
+        box-sizing: border-box;
+        width: 100% !important;
+        min-width: unset;
+    }
+    
+    #membersTable button {
+        padding: 2px 4px !important;
+        font-size: 10px;
+        width: 100% !important;
+        min-width: unset;
+        white-space: nowrap;
+    }
+    
+    #membersTable .wait-time {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    /* ... rest of the portrait CSS (unchanged) ... */
+    #paymentModeContent #scTable {
+        min-width: unset !important;
+        table-layout: fixed;
+        width: 100%;
+    }
+    #paymentModeContent #scTable th, #paymentModeContent #scTable td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 6px 4px;
+    }
+    #paymentModeContent #scTable th:nth-child(1), #paymentModeContent #scTable td:nth-child(1) { width: 40%; }
+    #paymentModeContent #scTable th:nth-child(2), #paymentModeContent #scTable td:nth-child(2) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(3), #paymentModeContent #scTable td:nth-child(3) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(4), #membersTable td:nth-child(4) { width: 30%; }
+    .court > div:first-child {
+        flex-wrap: nowrap;
+    }
+    .court > div:first-child > div:last-child {
+        gap: 4px;
+    }
+    .court button {
+      padding: 4px 6px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .court input[type="text"] {
+        width: 70px !important;
+        padding: 4px 6px !important;
+        font-size: 16px !important;
+    }
+  }
+  .history-scroll {
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+
+</style>
+
+<style id="floating-tabs-style">
+.bottom-tabs{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-around;
+  gap:6px;
+  background:#0f172a;
+  padding:8px 6px;
+  z-index:10000;
+  border-top:1px solid #334155;
+}
+.bottom-tabs button{
+  flex:1;
+  border:none;
+  background:#1e293b;
+  color:#e5e7eb;
+  padding:10px 4px;
+  border-radius:10px;
+  font-size:12px;
+}
+.bottom-tabs button.active{
+  background:#22c55e;
+  color:#022c22;
+}
+.tab-section{display:none}
+.tab-section.active{display:block}
+</style>
+
+</head>
+<body data-theme="dark">
+
+<div class="bottom-tabs">
+  <button class="active" onclick="showTab('membersTab',this)">สมาชิก</button>
+  <button onclick="showTab('courtsTab',this)">สนาม</button>
+  <button onclick="showTab('historyTab',this)">ประวัติ</button>
+  <button onclick="showTab('paymentTab',this)">คิดเงิน</button>
+</div>
+ <div class="wrap">
+    <header>
+      <h1>ระบบจัดก๊วนตีแบด</h1>
+      <div class="row">
+        <button id="btnToggleTheme" onclick="toggleTheme()" class="gray" style="background:var(--gray-button); color:white;">
+          สลับเป็น Light Mode ☀️
+        </button>
+        <div class="muted small">เก็บข้อมูลในเครื่อง (LocalStorage)</div>
+      </div>
+    </header>
+
+    <div id="membersTab" class="tab-section active"><section class="card" id="membersCard">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <div>
+          <strong>ตารางสมาชิก</strong><div class="muted small">คลิกแก้ชื่อหรือระดับมือได้ตลอด</div>
+        </div>
+        <div class="row">
+          <input id="inputName" type="text" placeholder="ชื่อสมาชิก" />
+          <select id="inputSkill">
+            <option>เบามาก</option>
+            <option>เบา</option>
+            <option selected>กลาง</option>
+            <option>กลางหนัก</option>
+            <option>หนัก</option>
+          </select>
+          <button id="btnAdd">เพิ่มสมาชิก</button>
+          <button id="btnReset" class="red">รีเซ็ตทั้งหมด</button>
+        </div>
+      </div>
+
+      <div style="overflow:auto;margin-top:12px">
+        <table id="membersTable">
+          <thead>
+            <tr>
+              <th style="width:46px">ลำดับ</th>
+              <th style="width:100px">ชื่อ</th>
+              <th style="width:120px">ระดับมือ</th>
+              <th style="width:90px">รอ</th>
+              <th style="width:90px">สถานะ</th>
+              <th style="width:70px">ลงสนาม</th> 
+              <th style="width:90px">ลูกที่ใช้</th>
+              <th style="width:80px">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="membersTbody"></tbody>
+        </table>
+      </div>
+    </section></div>
+
+    <div id="courtsTab" class="tab-section"><section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <div>
+          <strong>สนาม</strong><div class="muted small">เพิ่มสนามได้หลายสนาม</div>
+        </div>
+        <div class="row">
+          <input id="inputCourt" type="text" placeholder="ชื่อสนาม (เช่น Court 1)" />
+          <button id="btnAddCourt">เพิ่มสนาม</button>
+        </div>
+      </div>
+
+      <div class="grid" id="courtsGrid"></div>
+    </section></div>
+
+    <div id="historyTab" class="tab-section"><section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <div>
+          <strong>ประวัติการจับคู่ (ใครเคยคู่กับใคร)</strong>
+          <div class="muted small">บันทึกเมื่อกดตกลงยืนยันสนาม — ใช้เพื่อเลี่ยงจับคู่ซ้ำ</div>
+        </div>
+        <div class="row">
+          <input id="inputHistorySearch" type="text" placeholder="ค้นหาด้วยชื่อ..." oninput="filterHistory()" style="min-width: 150px;"/>
+          
+          <button id="btnExport" class="gray">Export CSV</button>
+          <button id="btnClearHistory" class="red">ลบประวัติ</button>
+        </div>
+      </div>
+
+      <div class="history-list history-scroll" id="historyList"></div>
+    </section></div>
+
+    <div id="paymentTab" class="tab-section"><section class="card" id="paymentCard">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <div>
+                <strong>รายจ่าย</strong>
+                <div class="muted small">คำนวณรายจ่ายตามจำนวนผู้เล่นที่มาแล้ว (สถานะ "มาแล้ว")</div>
+            </div>
+            <div class="row" id="paymentModeToggle">
+                <button id="btnModeEqual" onclick="setPaymentMode('equal')" style="background:#475569;">หารเท่า</button>
+                <button id="btnModeShuttlecock" onclick="setPaymentMode('shuttlecock')" style="background:#475569;">คิดตามจำนวนลูก</button>
+            </div>
+        </div>
+        <div id="paymentModeContent" style="margin-top: 12px;">
+            </div>
+    </section></div>
+    <footer style="margin-top:8px;color:var(--text-muted);font-size:13px">หมายเหตุ: ระบบพยายามเลือกผู้เล่นที่เล่นน้อยสุดก่อน และหลีกเลี่ยงการจับคู่ซ้ำ หากหาไม่ได้จะแจ้งให้ทราบ</footer>
+  </div>
+
+<script>
+/* Data structures:
+  // MODIFIED: 'plays' is now 'gamesPlayed' (number) for unlimited game count. 
+  // 'plays' array is REMOVED from the data structure, but kept in code for skill-based sorting fallback.
+  members: [{id,name,skill,gamesPlayed:number, shuttlecocksUsed: number, waitStartTime: timestamp, status}]
+  courts: [{id,name,players:[], pending:null, shuttlecocksCount: number}] 
+  pairHistory: {"id|id":count}
+  matchHistory: [{a:id,b:id,t:timestamp}] 
+  calcData: { mode, equal:{courtCost, scCost, totalSC}, shuttlecock:{courtCost, scCost} }
+*/
+const SKILL_VALUES = { 'เบามาก': 1, 'เบา': 2, 'กลาง': 3, 'กลางหนัก': 4, 'หนัก': 5 };
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+let members = load('bm_members') || [];
+let courts = load('bm_courts') || [];
+let pairHistory = load('bm_pairHistory') || {};
+let matchHistory = load('bm_matchHistory') || [];
+let calcData = load('bm_calcData') || {
+  mode: 'equal', 
+  equal: {
+    courtCost: 0,
+    shuttlecockCost: 0,
+    totalShuttlecocks: 0
+  },
+  shuttlecock: {
+    courtCost: 0,
+    shuttlecockCost: 0
+  }
+};
+
+// **MODIFICATION: Data migration/cleanup for old 'plays' array**
+members = members.map(m => {
+    // If gamesPlayed is missing but plays array exists, calculate initial gamesPlayed
+    if (m.gamesPlayed === undefined && Array.isArray(m.plays)) {
+        m.gamesPlayed = m.plays.filter(Boolean).length;
+    } else if (m.gamesPlayed === undefined) {
+        m.gamesPlayed = 0; // Initialize to 0 if neither exists
+    }
+    // Remove the old 'plays' array to simplify data structure, but keep it available 
+    // for legacy code that might rely on its structure for sorting/logic (will be handled below)
+    delete m.plays; 
+    
+    // Ensure status and shuttlecocksUsed are present
+    if(!m.status) m.status = 'ยังไม่มา';
+    if(m.shuttlecocksUsed === undefined) m.shuttlecocksUsed = 0;
+    
+    return m;
+});
+
+
+function saveAll(){ 
+  save('bm_members', members); 
+  save('bm_courts', courts); 
+  save('bm_pairHistory', pairHistory); 
+  save('bm_matchHistory', matchHistory); 
+  save('bm_calcData', calcData);
+}
+
+const membersTbody = document.getElementById('membersTbody');
+const courtsGrid = document.getElementById('courtsGrid');
+const historyList = document.getElementById('historyList');
+
+/* ****************************************************** */
+/* *** Theme Toggle Functions *** */
+/* ****************************************************** */
+function setInitialTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const btn = document.getElementById('btnToggleTheme');
+    if (btn) {
+        btn.textContent = savedTheme === 'dark' ? 'สลับเป็น Light Mode ☀️' : 'สลับเป็น Dark Mode 🌙';
+    }
+}
+
+window.toggleTheme = function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    const btn = document.getElementById('btnToggleTheme');
+    if (btn) {
+        btn.textContent = newTheme === 'dark' ? 'สลับเป็น Light Mode ☀️' : 'สลับเป็น Dark Mode 🌙';
+    }
+}
+// Set theme immediately when script runs
+setInitialTheme();
+/* ****************************************************** */
+/* *** END: Theme Toggle Functions *** */
+/* ****************************************************** */
+
+
+function getPlayersInCourtIds(){
+  // IDs of members who are confirmed in a court (court.players)
+  const inCourtIds = new Set(courts.flatMap(c => (c.players || [])).filter(Boolean));
+  return inCourtIds;
+}
+
+function getAvailableMembers(){
+  const inCourtOrPendingIds = new Set(courts.flatMap(c => (c.players || []).concat(c.pending ? c.pending.teams.flat() : [])).filter(Boolean));
+  return members.filter(m => m.status === 'มาแล้ว' && !inCourtOrPendingIds.has(m.id));
+}
+
+function getPresentMembers() {
+  return members.filter(m => m.status === 'มาแล้ว');
+}
+
+/**
+ * *** MODIFIED: formatTime (MM:SS, max 30:00) ***
+ */
+function formatTime(seconds) {
+  const MAX_SECONDS = 1800; // 30 minutes
+  
+  if (seconds >= MAX_SECONDS) {
+    return '30:00';
+  }
+
+  const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const s = String(seconds % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+const memberRows = new Map();
+let sortedHistoryRows = [];
+
+/**
+ * *** MODIFIED: Wait time logic ***
+ */
+function updateWaitTimes() {
+  const inCourtIds = getPlayersInCourtIds(); // IDs ที่อยู่ในสถานะ court.players
+  
+  for (const [memberId, rowEl] of memberRows.entries()) {
+    const m = members.find(mem => mem.id === memberId);
+    if (!m) continue;
+    
+    const waitTimeEl = rowEl.querySelector('.wait-time');
+    
+    // Timer runs if the status is "มาแล้ว" AND the player is NOT in a confirmed court
+    // การอยู่ในสถานะ Pending จะถือว่าเป็นสถานะรอ และเวลาก็จะยังเดินต่อ
+    if (m.status === 'มาแล้ว' && !inCourtIds.has(m.id)) {
+      // 1. เวลาหายไปทันที: หากเข้าเงื่อนไข แต่ waitStartTime เป็น null ให้เริ่มจับใหม่
+      if(!m.waitStartTime) m.waitStartTime = Date.now();
+      
+      const seconds = Math.floor((Date.now() - m.waitStartTime) / 1000);
+      waitTimeEl.textContent = formatTime(seconds);
+    } else {
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที (หรือสถานะยังไม่มา)
+      m.waitStartTime = null; 
+      waitTimeEl.textContent = '-'; // แสดงเป็นขีดแทน 00:00 // แก้ให้แสดง 00:00 เมื่อไม่ได้จับเวลา
+    }
+  }
+}
+
+function renderMembers(){
+  const inCourtIds = getPlayersInCourtIds(); 
+  
+  membersTbody.innerHTML = '';
+  memberRows.clear(); 
+  if(members.length === 0){
+    membersTbody.innerHTML = '<tr><td colspan="8" style="padding:18px;text-align:center;color:var(--text-muted)">ยังไม่มีสมาชิก — เพิ่มสมาชิกเพื่อเริ่มใช้งาน</td></tr>'; // Total 17 columns
+    return;
+  }
+
+  members.forEach((m, idx) => {
+    // **MODIFIED: Initialize gamesPlayed and ensure shuttlecocksUsed is present**
+    if(m.gamesPlayed === undefined) m.gamesPlayed = 0; 
+    if(!m.status) m.status = 'ยังไม่มา';
+    if(m.shuttlecocksUsed === undefined) m.shuttlecocksUsed = 0;
+    
+    const tr = document.createElement('tr');
+    tr.dataset.memberId = m.id;
+    memberRows.set(m.id, tr);
+
+    // ลำดับ
+    const tdIdx = document.createElement('td');
+    tdIdx.textContent = idx + 1;
+    tr.appendChild(tdIdx);
+
+    // ชื่อ
+    const tdName = document.createElement('td');
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = m.name;
+    nameInput.style.width = '100%';
+    nameInput.onchange = () => {
+      m.name = nameInput.value.trim();
+      saveAll();
+      renderCourts();
+      renderHistory();
+    };
+    tdName.appendChild(nameInput);
+    tr.appendChild(tdName);
+
+    // ระดับมือ
+    const tdSkill = document.createElement('td');
+    const selSkill = document.createElement('select');
+    ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'].forEach(s => {
+      const op = document.createElement('option');
+      op.value = s;
+      op.textContent = s;
+      if(s === m.skill) op.selected = true;
+      selSkill.appendChild(op);
+    });
+    selSkill.onchange = () => { m.skill = selSkill.value; saveAll(); };
+    tdSkill.appendChild(selSkill);
+    tr.appendChild(tdSkill);
+
+
+    // เวลาที่รอ
+    const tdWaitTime = document.createElement('td');
+    tdWaitTime.className = 'wait-time';
+    tdWaitTime.textContent = '00:00'; // Default display
+    tr.appendChild(tdWaitTime);
+
+    // สถานะ
+    const tdStatus = document.createElement('td');
+    const selStatus = document.createElement('select');
+    
+    function updateStatusColor(selectEl) {
+      selectEl.className = selectEl.value === 'มาแล้ว' ? 'status-select-มาแล้ว' : 'status-select-ยังไม่มา';
+    }
+    
+    ['ยังไม่มา','มาแล้ว'].forEach(s => {
+      const op = document.createElement('option');
+      op.value = s;
+      op.textContent = s;
+      if(m.status === s) op.selected = true;
+      selStatus.appendChild(op);
+    });
+    updateStatusColor(selStatus);
+    
+    selStatus.onchange = () => {
+      m.status = selStatus.value;
+      
+      // *** MODIFICATION: ปรับปรุงเงื่อนไขการเริ่มจับเวลา ***
+      if (m.status === 'มาแล้ว' && !inCourtIds.has(m.id)) {
+        // เริ่มจับเวลาครั้งแรกเมื่อ "มาแล้ว" และ "ไม่ได้อยู่ในสนามที่ยืนยัน"
+        if(!m.waitStartTime) m.waitStartTime = Date.now(); 
+      } else if (m.status === 'ยังไม่มา' || inCourtIds.has(m.id)) {
+        m.waitStartTime = null; // หยุดจับเวลาเมื่อ "ยังไม่มา" หรืออยู่ในสนามที่ยืนยันแล้ว
+      }
+      
+      updateStatusColor(selStatus);
+      saveAll();
+      updateWaitTimes(); 
+      renderPaymentSection();
+    };
+    tdStatus.appendChild(selStatus);
+    tr.appendChild(tdStatus);
+
+    // *** MODIFIED: จำนวนลงสนาม (Game Count) ***
+    
+    const tdPlayCount = document.createElement('td');
+    tdPlayCount.className = 'play-count';
+    const playInput = document.createElement('input');
+    playInput.type = 'number';
+    playInput.min = '0';
+    playInput.step = '1';
+    playInput.value = Math.round(m.gamesPlayed || 0);
+    playInput.style.width = '60px';
+    playInput.onchange = () => {
+      const val = parseInt(playInput.value) || 0;
+      m.gamesPlayed = Math.max(0, val);
+      playInput.value = m.gamesPlayed; // Update value to clean up
+      saveAll();
+      renderPaymentSection();
+    };
+    tdPlayCount.appendChild(playInput);
+    tr.appendChild(tdPlayCount);
+
+    // *** END MODIFIED COLUMN ***
+
+    // ลูกที่ใช้ (Code unchanged for brevity, uses new CSS variables)
+    const tdShuttlecock = document.createElement('td');
+    const scInput = document.createElement('input');
+    scInput.type = 'number';
+    scInput.min = '0';
+    scInput.step = '1';
+    scInput.value = Math.round(m.shuttlecocksUsed || 0);
+    scInput.style.width = '100%';
+    scInput.onchange = () => {
+      const val = parseInt(scInput.value) || 0;
+      m.shuttlecocksUsed = Math.max(0, val);
+      scInput.value = m.shuttlecocksUsed;
+      saveAll();
+      renderPaymentSection();
+    };
+    tdShuttlecock.appendChild(scInput);
+    tr.appendChild(tdShuttlecock);
+    
+    // จัดการ
+    const tdManage = document.createElement('td');
+    const btnDel = document.createElement('button');
+    btnDel.textContent = 'ลบ';
+    btnDel.className = 'red';
+    btnDel.onclick = () => {
+      if(!confirm('ลบสมาชิกนี้?')) return;
+      
+      // *** MODIFICATION: ลบผู้เล่นออกจากสนามและรีเซ็ตเวลาถ้าจำเป็น ***
+      const inPlayers = [];
+      courts.forEach(c => {
+        if(c.players && c.players.includes(m.id)) {
+            c.players = c.players.filter(x => x !== m.id);
+        }
+        if(c.pending){
+          const flat = c.pending.teams.flat();
+          if(flat.includes(m.id)) c.pending = null;
+        }
+      });
+      members = members.filter(x => x.id !== m.id);
+      
+      // ไม่ต้องรีเซ็ต waitStartTime ของ m เพราะ m ถูกลบไปแล้ว
+      
+      saveAll();
+      renderAll();
+    };
+    tdManage.appendChild(btnDel);
+    tr.appendChild(tdManage);
+
+    membersTbody.appendChild(tr);
+  });
+}
+
+function renderCourtElement(court) {
+  const el = document.createElement('div');
+  el.className='court';
+  el.dataset.courtId = court.id;
+  
+  if(court.shuttlecocksCount === undefined) court.shuttlecocksCount = 0;
+
+  // ... [Drag & Drop logic unchanged] ...
+  el.draggable = true;
+  el.ondragstart = (event) => {
+    event.dataTransfer.setData('text/plain', court.id);
+    setTimeout(() => el.classList.add('dragging'), 0);
+  };
+  el.ondragend = () => el.classList.remove('dragging');
+  el.ondragover = (event) => {
+    event.preventDefault();
+    if (event.currentTarget.dataset.courtId !== event.dataTransfer.getData('text/plain')) {
+      el.classList.add('drag-over');
+    }
+  };
+  el.ondragleave = () => el.classList.remove('drag-over');
+  el.ondrop = (event) => {
+    event.preventDefault();
+    el.classList.remove('drag-over');
+    const sourceCourtId = event.dataTransfer.getData('text/plain');
+    const targetCourtId = court.id;
+    if (sourceCourtId === targetCourtId) return;
+    const sourceCourt = courts.find(c => c.id === sourceCourtId);
+    const targetCourt = courts.find(c => c.id === targetCourtId);
+    
+    if (sourceCourt && targetCourt) {
+      const tempPlayers = sourceCourt.players;
+      sourceCourt.players = targetCourt.players;
+      targetCourt.players = tempPlayers;
+      const tempPending = sourceCourt.pending;
+      sourceCourt.pending = targetCourt.pending;
+      targetCourt.pending = tempPending;
+      saveAll();
+      renderAll();
+    }
+  };
+  // ... [End of Drag & Drop logic] ...
+
+  // MODIFIED: top container now only holds title and the main controls container
+  const top = document.createElement('div'); top.style.display='flex'; top.style.justifyContent='space-between'; top.style.alignItems='center';
+  
+  // Editable Court Name
+  const titleInput = document.createElement('input');
+  titleInput.type = 'text';
+  titleInput.value = court.name;
+  titleInput.style.fontSize = '18px'; 
+  titleInput.style.fontWeight = 'bold'; 
+  titleInput.style.width = '100px'; 
+  
+  titleInput.onchange = titleInput.onblur = () => {
+    const newName = titleInput.value.trim();
+    if (newName) {
+      court.name = newName;
+      saveAll();
+      titleInput.value = court.name;
+    } else {
+      const defaultName = `Court ${courts.findIndex(c => c.id === court.id) + 1}`;
+      court.name = court.name || defaultName;
+      titleInput.value = court.name;
+      saveAll();
+    }
+  };
+  
+  // Refactor controls section (Added a wrapper for media query control)
+  const controlsWrapper = document.createElement('div');
+  controlsWrapper.className = 'controls-container'; // Class for media query
+  
+  // 1. Shuttlecock Controls Group 
+  const shuttlecockGroup = document.createElement('div');
+  shuttlecockGroup.className = 'shuttlecock-group'; // Class for media query
+  
+  const scDisplay = document.createElement('span'); 
+  scDisplay.textContent = court.shuttlecocksCount;
+  scDisplay.style.marginRight = '8px';
+  scDisplay.style.fontWeight = 'bold';
+  scDisplay.style.fontSize = '16px';
+  scDisplay.style.color = 'var(--warning)'; // Use warning color for counter
+  scDisplay.className = 'shuttlecock-display'; // Class for media query
+
+  const btnShuttlecock = document.createElement('button');
+  btnShuttlecock.textContent = 'ขอลูกเพิ่ม';
+  btnShuttlecock.style.backgroundColor = 'var(--warning)';
+  
+  btnShuttlecock.onclick = () => {
+    if (!confirm(`ยืนยันการเพิ่มลูกแบด 1 ลูก สำหรับผู้เล่นในสนาม ${court.name} ?`)) {
+        return;
+    }
+    
+    const playersPresent = court.players && court.players.length > 0;
+
+    if (playersPresent) {
+        court.shuttlecocksCount += 1;
+        scDisplay.textContent = court.shuttlecocksCount;
+
+        const usagePerPlayer = 1;
+        court.players.forEach(pid => {
+            const m = members.find(x => x.id === pid);
+            if (m) {
+                // NOTE: This logic for shuttlecock cost allocation is correct for the original implementation
+                m.shuttlecocksUsed = Math.round((m.shuttlecocksUsed || 0) + usagePerPlayer); 
+            }
+        });
+
+        saveAll();
+        renderMembers(); 
+        renderPaymentSection(); 
+    } else {
+        alert('ไม่สามารถเพิ่มลูกได้: ไม่มีผู้เล่นอยู่ในสนาม');
+    }
+  };
+
+  shuttlecockGroup.appendChild(scDisplay);
+  shuttlecockGroup.appendChild(btnShuttlecock);
+  controlsWrapper.appendChild(shuttlecockGroup);
+  
+  // 2. Arrangement Buttons Group
+  const actionButtons = document.createElement('div');
+  actionButtons.className = 'action-buttons'; // Class for media query
+  actionButtons.style.display = 'flex'; // Ensure flex layout
+  actionButtons.style.gap = '4px'; // Reduce gap
+  
+  const btnManual = document.createElement('button');
+  btnManual.textContent = 'จัดเอง';
+  btnManual.style.backgroundColor = 'var(--success)'; 
+  btnManual.onclick = () => manualAssign(court.id);
+  
+  const btnArrange = document.createElement('button'); 
+  btnArrange.textContent='สุ่ม'; 
+  btnArrange.onclick = ()=> arrangeForCourt(court.id);
+  
+  const btnEmpty = document.createElement('button'); 
+  btnEmpty.textContent='ว่าง'; 
+  btnEmpty.className='gray'; 
+  btnEmpty.onclick = ()=>{
+    if(!confirm('จะเคลียร์ผู้เล่นในสนามนี้ออกใช่หรือไม่?')) return;
+    
+    // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่ออกจากสนาม Players ทันที (เริ่มจับเวลาใหม่) ***
+    const oldPlayersIds = court.players || [];
+    oldPlayersIds.forEach(pid => {
+      const m = members.find(x => x.id === pid);
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที
+      if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
+    });
+    
+    court.players = []; court.pending = null; 
+    saveAll(); renderAll(); 
+  };
+  
+  const btnRemove = document.createElement('button'); 
+  btnRemove.textContent='ลบ'; 
+  btnRemove.className='red'; 
+  btnRemove.style.marginLeft='0'; // Remove inline margin
+  btnRemove.onclick = ()=>{ 
+    if(!confirm('ลบสนามนี้?')) return; 
+    
+    // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่อยู่ในสนาม Players ที่กำลังจะถูกลบ ทันที (เริ่มจับเวลาใหม่) ***
+    const oldPlayersIds = court.players || [];
+    oldPlayersIds.forEach(pid => {
+      const m = members.find(x => x.id === pid);
+      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที
+      if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
+    });
+    
+    courts = courts.filter(x=>x.id!==court.id); 
+    saveAll(); 
+    renderAll(); 
+  };
+  
+  actionButtons.appendChild(btnManual);
+  actionButtons.appendChild(btnArrange);
+  actionButtons.appendChild(btnEmpty); 
+  actionButtons.appendChild(btnRemove);
+  controlsWrapper.appendChild(actionButtons);
+  
+  top.appendChild(titleInput); 
+  top.appendChild(controlsWrapper); // Append the wrapper
+  el.appendChild(top);
+
+  // ... [Remaining Court rendering logic for players/pending unchanged, uses new CSS variables] ...
+  
+  const info = document.createElement('div'); info.className='muted small'; info.style.marginTop='8px'; info.textContent='ผู้เล่นในสนาม:';
+  el.appendChild(info);
+
+  const playersBox = document.createElement('div'); playersBox.className='players';
+  if(court.pending){
+    const box = document.createElement('div'); box.className='pending';
+    const heading = document.createElement('div'); heading.className='small muted'; heading.textContent='ผลการสุ่ม (ยังไม่ยืนยัน)';
+    box.appendChild(heading);
+    const teamsRow = document.createElement('div'); teamsRow.style.display='flex'; teamsRow.style.justifyContent='space-between'; teamsRow.style.gap='8px';
+    ['A','B'].forEach((t,i)=>{
+      const team = document.createElement('div'); team.style.flex='1';
+      const lab = document.createElement('div'); lab.className='small muted'; lab.textContent = 'ทีม ' + t;
+      team.appendChild(lab);
+      const member1 = court.pending.teams[i][0]; const member2 = court.pending.teams[i][1];
+      [member1, member2].forEach((mid, idxMember)=>{
+        const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.marginTop='6px';
+        const nameDiv = document.createElement('div'); nameDiv.innerHTML = `<strong>${escapeHtml(getMemberName(mid))}</strong><div class="muted small">${getMemberSkill(mid)}</div>`;
+        const changeBtn = document.createElement('button'); changeBtn.textContent='เปลี่ยน'; changeBtn.className='gray'; changeBtn.style.marginLeft='8px';
+        changeBtn.onclick = ()=> openReplaceDialog(court.id, i, idxMember);
+        row.appendChild(nameDiv); row.appendChild(changeBtn);
+        team.appendChild(row);
+      });
+      teamsRow.appendChild(team);
+    });
+    box.appendChild(teamsRow);
+
+    const btnRow = document.createElement('div'); btnRow.style.marginTop='10px'; btnRow.style.display='flex'; btnRow.style.gap='8px';
+    const ok = document.createElement('button'); ok.textContent='ตกลง'; ok.onclick = ()=> confirmArrangement(court.id);
+    const cancel = document.createElement('button'); cancel.textContent='ยกเลิก'; cancel.className='gray'; cancel.onclick = ()=> { 
+      // *** MODIFICATION: ตามคำขอของผู้ใช้: ห้ามรีเซ็ตเวลาเมื่อกดยกเลิก Pending (เวลาจะเดินต่อ/ค้างอยู่ตามเดิม) ***
+      // const oldPendingIds = court.pending.teams.flat();
+      // oldPendingIds.forEach(pid => {
+      //   const m = members.find(x => x.id === pid);
+      //   // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
+      //   if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
+      // });
+      
+      court.pending = null; saveAll(); renderAll(); 
+    };
+    btnRow.appendChild(ok); btnRow.appendChild(cancel);
+    box.appendChild(btnRow);
+    playersBox.appendChild(box);
+  } else if(court.players && court.players.length === 4){
+    const aName = getMemberName(court.players[0]) + ' & ' + getMemberName(court.players[1]);
+    const bName = getMemberName(court.players[2]) + ' & ' + getMemberName(court.players[3]);
+    const d = document.createElement('div'); d.className='player-line';
+    d.innerHTML = `<div><div class="small muted">ทีม A</div><div><strong>${escapeHtml(aName)}</strong></div></div><div><div class="small muted">ทีม B</div><div><strong>${escapeHtml(bName)}</strong></div></div>`;
+    playersBox.appendChild(d);
+  } else {
+    const d = document.createElement('div'); d.className='small muted'; d.textContent = 'ว่าง';
+    playersBox.appendChild(d);
+  }
+
+  el.appendChild(playersBox);
+  return el;
+}
+
+function renderCourts(){
+  courtsGrid.innerHTML = '';
+  if(courts.length === 0){
+    courtsGrid.innerHTML = '<div style="grid-column:1/-1;padding:10px;background:var(--card);border-radius:8px;border:1px dashed var(--divider);text-align:center;color:var(--text-muted)">ยังไม่มีสนาม — เพิ่มสนามเพื่อเริ่มจัด</div>';
+    return;
+  }
+  courts.forEach(court => {
+    courtsGrid.appendChild(renderCourtElement(court));
+  });
+}
+
+// ... [renderHistory, filterHistory, Helpers logic unchanged] ...
+function renderHistory(){
+  if(matchHistory.length === 0){
+    sortedHistoryRows = [];
+    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>'; return;
+  }
+  const map = {};
+  matchHistory.forEach(item => {
+    const key = pairKey(item.a,item.b);
+    map[key] = map[key] || {a:item.a,b:item.b,count:0,last:item.t};
+    map[key].count += 1;
+    if(item.t > map[key].last) map[key].last = item.t;
+  });
+  sortedHistoryRows = Object.values(map).sort((x,y)=>y.last - x.last);
+  filterHistory(); 
+}
+
+function filterHistory() {
+    const searchTerm = document.getElementById('inputHistorySearch').value.toLowerCase().trim();
+    historyList.innerHTML = '';
+
+    if (sortedHistoryRows.length === 0) {
+        historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>';
+        return;
+    }
+
+    const filteredRows = sortedHistoryRows.filter(r => {
+        if (!searchTerm) return true;
+        const nameA = getMemberName(r.a).toLowerCase();
+        const nameB = getMemberName(r.b).toLowerCase();
+        return nameA.includes(searchTerm) || nameB.includes(searchTerm);
+    });
+    
+    if (filteredRows.length === 0) {
+        historyList.innerHTML = '<div class="muted small">ไม่พบประวัติการจับคู่สำหรับชื่อที่ค้นหา</div>';
+        return;
+    }
+
+    filteredRows.forEach(r => {
+        const div = document.createElement('div'); 
+        div.style.padding='6px 0'; 
+        div.style.borderBottom='1px dashed var(--divider)';
+        
+        const nameLine = document.createElement('div'); 
+        nameLine.innerHTML = `<strong>${escapeHtml(getMemberName(r.a))}</strong> — <strong>${escapeHtml(getMemberName(r.b))}</strong>`;
+        
+        const meta = document.createElement('div'); 
+        meta.className='muted small'; 
+        meta.textContent = `จำนวนครั้ง: ${r.count} · ล่าสุด: ${new Date(r.last).toLocaleString()}`;
+        
+        div.appendChild(nameLine); 
+        div.appendChild(meta); 
+        historyList.appendChild(div);
+    });
+}
+function getMemberName(id){ const m = members.find(x=>x.id===id); return m ? m.name : '(หายไป)'; }
+function getMemberSkill(id){ const m = members.find(x=>x.id===id); return m ? m.skill : ''; }
+function pairKey(a,b){ return a < b ? `${a}|${b}` : `${b}|${a}`; }
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
+/* End of Helpers */
+
+/* Arrange logic (MODIFIED: Uses 'gamesPlayed' instead of 'plays' array length) */
+function tryMakeMatch(avail){
+  if(avail.length < 4) return null;
+  // **MODIFIED: Use gamesPlayed for sorting**
+  avail.forEach(a => a.playCount = a.gamesPlayed || 0); 
+  const groups = {};
+  avail.forEach(a => { groups[a.playCount] = groups[a.playCount] || []; groups[a.playCount].push(a); });
+  const pcs = Object.keys(groups).map(Number).sort((a,b)=>a-b);
+  const ordered = [];
+  pcs.forEach(pc => {
+    const arr = groups[pc].slice();
+    for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+    ordered.push(...arr);
+  });
+  const n = Math.min(ordered.length, 14);
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      for(let k=j+1;k<n;k++){
+        for(let l=k+1;l<n;l++){
+          const a=ordered[i], b=ordered[j], c=ordered[k], d=ordered[l];
+          const sum1 = SKILL_VALUES[a.skill] + SKILL_VALUES[b.skill];
+          const sum2 = SKILL_VALUES[c.skill] + SKILL_VALUES[d.skill];
+          if(sum1 !== sum2) continue;
+          const keyAB = pairKey(a.id,b.id), keyCD = pairKey(c.id,d.id);
+          if((pairHistory[keyAB]||0) > 0) continue;
+          if((pairHistory[keyCD]||0) > 0) continue;
+          return { teams:[[a.id,b.id],[c.id,d.id]], details:{ a:{id:a.id}, b:{id:b.id}, c:{id:c.id}, d:{id:d.id} } };
+        }
+      }
+    }
+  }
+  let best = null;
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      for(let k=j+1;k<n;k++){
+        for(let l=k+1;l<n;l++){
+          const a=ordered[i], b=ordered[j], c=ordered[k], d=ordered[l];
+          const sum1 = SKILL_VALUES[a.skill] + SKILL_VALUES[b.skill];
+          const sum2 = SKILL_VALUES[c.skill] + SKILL_VALUES[d.skill];
+          if(sum1 !== sum2) continue;
+          const keyAB = pairKey(a.id,b.id), keyCD = pairKey(c.id,d.id);
+          const score = (pairHistory[keyAB]||0) + (pairHistory[keyCD]||0);
+          if(best === null || score < best.score){
+            best = { teams:[[a.id,b.id],[c.id,d.id]], score, details:{ a:{id:a.id}, b:{id:b.b}, c:{id:c.id}, d:{id:d.id} } };
+          }
+        }
+      }
+    }
+  }
+  return best ? best : null;
+}
+
+function arrangeForCourt(courtId){
+  const court = courts.find(c=>c.id===courtId);
+  const avail = getAvailableMembers();
+  if(avail.length < 4){ alert('ต้องมีผู้เล่นอย่างน้อย 4 คนที่ยังว่าง'); return; }
+  const match = tryMakeMatch(avail);
+  if(!match){ alert('ไม่พบผู้เล่นที่ตรงเงื่อนไข (ลองเพิ่มสมาชิกหรือปรับระดับมือ)'); return; }
+  
+  court.pending = match;
+  saveAll(); 
+  const oldCourtEl = courtsGrid.querySelector(`[data-court-id="${courtId}"]`);
+  if (oldCourtEl) {
+    courtsGrid.replaceChild(renderCourtElement(court), oldCourtEl);
+  } else {
+    renderCourts();
+  }
+}
+
+/* Confirm arrangement: commit players -> update plays (now gamesPlayed) & history (MODIFIED) */
+function confirmArrangement(courtId){
+  const court = courts.find(c=>c.id===courtId);
+  if(!court || !court.pending) return;
+  const ids = court.pending.teams.flat();
+  
+  ids.forEach(id=>{
+    const m = members.find(x => x.id === id);
+    if(m){
+      // **MODIFIED: Increment gamesPlayed instead of manipulating 'plays' array**
+      m.gamesPlayed = (m.gamesPlayed || 0) + 1;
+      
+      // 1. เวลาหายไปทันที: เมื่อผู้เล่นอยู่ในสถานะ "players" อย่างเดียว (หยุดจับเวลา)
+      m.waitStartTime = null; 
+    }
+  });
+  const [teamA, teamB] = court.pending.teams;
+  recordPair(teamA[0], teamA[1]); recordPair(teamB[0], teamB[1]);
+  const t = Date.now();
+  matchHistory.push({a:teamA[0], b:teamA[1], t}); matchHistory.push({a:teamB[0], b:teamB[1], t});
+  court.players = ids;
+  court.pending = null;
+  saveAll();
+  renderAll();
+}
+
+function recordPair(a,b){
+  const key = pairKey(a,b);
+  pairHistory[key] = (pairHistory[key] || 0) + 1;
+}
+
+/* Replacement dialog: replace one position in pending (Wait time logic updated for rule 2) */
+function openReplaceDialog(courtId, teamIndex, memberIndex){
+  const court = courts.find(c=>c.id===courtId);
+  if(!court || !court.pending) return;
+  
+  const confirmedPlayersIds = getPlayersInCourtIds(); 
+  const otherPendingIds = new Set(courts.filter(c => c.id !== courtId).flatMap(c => c.pending ? c.pending.teams.flat() : []));
+  
+  const currentId = court.pending.teams[teamIndex][memberIndex];
+  const candidates = members.filter(m => !confirmedPlayersIds.has(m.id) && (!otherPendingIds.has(m.id) || m.id === currentId));
+  
+  if(candidates.length === 0){
+    alert('ไม่มีสมาชิกที่สามารถเปลี่ยนได้');
+    return;
+  }
+
+  const modal = document.createElement('div');
+  modal.style = `
+    position: fixed; top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    display:flex; justify-content:center; align-items:center;
+    z-index: 9999;
+  `;
+  modal.classList.add('time-modal');
+
+  const box = document.createElement('div');
+  box.style = `
+    background: var(--card); padding: 20px; border-radius: 12px; min-width: 280px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: var(--text-primary);
+  `;
+
+  const label = document.createElement('div');
+  label.textContent = 'เลือกสมาชิกที่ต้องการเปลี่ยน:';
+  label.style.marginBottom = '10px';
+  box.appendChild(label);
+
+  const select = document.createElement('select');
+  select.style.width = '100%';
+  select.style.backgroundColor = 'var(--input-bg)';
+  select.style.color = 'var(--text-primary)';
+  candidates.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    // ใช้ formatTime ใหม่ (MM:SS) และแก้ default เป็น 00:00
+    const statusText = c.status === 'มาแล้ว' ? `รอ ${c.waitStartTime ? formatTime(Math.floor((Date.now() - c.waitStartTime) / 1000)) : '00:00'}` : 'ยังไม่มา';
+    opt.textContent = `${c.name} (${c.skill} | ${statusText})`;
+    if (c.id === currentId) {
+      opt.selected = true;
+    }
+    select.appendChild(opt);
+  });
+  box.appendChild(select);
+
+  const btnRow = document.createElement('div');
+  btnRow.style.marginTop = '15px';
+  btnRow.style.textAlign = 'right';
+
+  const btnCancel = document.createElement('button');
+  btnCancel.textContent = 'ยกเลิก';
+  btnCancel.className = 'gray';
+  btnCancel.style.marginRight = '10px';
+  btnCancel.onclick = () => document.body.removeChild(modal);
+
+  const btnOk = document.createElement('button');
+  btnOk.textContent = 'ตกลง';
+  btnOk.onclick = () => {
+    const chosenId = select.value;
+    const oldId = court.pending.teams[teamIndex][memberIndex];
+    
+    // *** MODIFICATION: ตามคำขอของผู้ใช้: ห้ามรีเซ็ตเวลาเมื่อถูกแทนที่ออกจากการจัดคู่ pending ***
+    // ผู้เล่นที่ถูกแทนที่ออกไป จะกลับสู่สถานะรอ และเวลาจะเดินต่อ/ค้างไว้ตามเดิม
+    // if (oldId !== chosenId) {
+    //   const oldMember = members.find(m => m.id === oldId); 
+      
+    //   if (oldMember && oldMember.status === 'มาแล้ว') {
+    //     const isOldPlayerInOtherPending = courts.some(c => c.id !== courtId && (c.pending && c.pending.teams.flat().includes(oldId)));
+    //     const isOldPlayerInOtherConfirmed = getPlayersInCourtIds().has(oldId);
+        
+    //     if (!isOldPlayerInOtherPending && !isOldPlayerInOtherConfirmed) {
+    //         oldMember.waitStartTime = Date.now();
+    //     } else {
+    //         oldMember.waitStartTime = null;
+    //     }
+    //   }
+    // }
+    
+    court.pending.teams[teamIndex][memberIndex] = chosenId;
+    saveAll();
+    
+    const oldCourtEl = courtsGrid.querySelector(`[data-court-id="${courtId}"]`);
+    if (oldCourtEl) {
+      courtsGrid.replaceChild(renderCourtElement(court), oldCourtEl);
+    } else {
+      renderCourts();
+    }
+    
+    document.body.removeChild(modal);
+    updateWaitTimes();
+  };
+
+  btnRow.appendChild(btnCancel);
+  btnRow.appendChild(btnOk);
+  box.appendChild(btnRow);
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+// --- START: Manual Assign function (Wait time logic updated for rule 2) ---
+function manualAssign(courtId){
+  const court = courts.find(c=>c.id===courtId);
+  const inCourtIds = getPlayersInCourtIds(); 
+  
+  const avail = members.filter(m => !inCourtIds.has(m.id));
+  if(avail.length < 4){ alert('ต้องมีผู้เล่นอย่างน้อย 4 คนที่ยังว่าง หรืออยู่ใน pending เท่านั้น'); return; }
+
+  const modal = document.createElement('div');
+  modal.style = `
+    position: fixed; top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    display:flex; justify-content:center; align-items:center;
+    z-index: 9999;
+  `;
+  modal.classList.add('time-modal');
+  const box = document.createElement('div');
+  box.style = `
+    background: var(--card); padding: 20px; border-radius: 12px; min-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: var(--text-primary);
+  `;
+  const title = document.createElement('div');
+  title.textContent = 'เลือกผู้เล่น 4 คน';
+  title.style.marginBottom = '10px';
+  box.appendChild(title);
+
+  const selects = [];
+  function updateSelectOptions() {
+    const chosenIds = new Set(selects.map(sel => sel.value).filter(Boolean));
+    selects.forEach(sel => {
+      const selectedValue = sel.value;
+      
+      const optionsHtml = avail.filter(m => !chosenIds.has(m.id) || m.id === selectedValue)
+                               .map(m => {
+                                  // เวลาที่แสดงคือเวลา "รอ" จริง
+                                  const statusText = m.status === 'มาแล้ว' ? `รอ ${m.waitStartTime ? formatTime(Math.floor((Date.now() - m.waitStartTime) / 1000)) : '00:00'}` : 'ยังไม่มา';
+                                  return `<option value="${m.id}" ${m.id === selectedValue ? 'selected' : ''}>${m.name} (${m.skill} | ${statusText})</option>`;
+                               }).join('');
+      sel.innerHTML = optionsHtml;
+    });
+  }
+  
+  const teamsContainer = document.createElement('div');
+  teamsContainer.style.display = 'flex';
+  teamsContainer.style.gap = '20px'; 
+  teamsContainer.style.width = '100%';
+
+  function createTeamSelects(teamName, count) {
+    const teamBox = document.createElement('div');
+    teamBox.style.flex = '1';
+    teamBox.innerHTML = `<div style="font-weight:bold; margin-bottom:8px; color:var(--accent)">ทีม ${teamName}</div>`;
+
+    for (let i = 0; i < count; i++) {
+      const sel = document.createElement('select');
+      sel.style.width = '100%';
+      sel.style.marginBottom = '8px';
+      sel.style.backgroundColor = 'var(--input-bg)';
+      sel.style.color = 'var(--text-primary)';
+      sel.onchange = updateSelectOptions;
+      selects.push(sel);
+      teamBox.appendChild(sel);
+    }
+    return teamBox;
+  }
+  
+  teamsContainer.appendChild(createTeamSelects('A', 2));
+  teamsContainer.appendChild(createTeamSelects('B', 2));
+  box.appendChild(teamsContainer);
+
+  updateSelectOptions();
+
+  const btnRow = document.createElement('div');
+  btnRow.style.textAlign = 'right';
+  btnRow.style.marginTop = '10px';
+  const btnCancel = document.createElement('button');
+  btnCancel.textContent = 'ยกเลิก';
+  btnCancel.className = 'gray';
+  btnCancel.style.marginRight = '10px';
+  btnCancel.onclick = ()=> document.body.removeChild(modal);
+  const btnOk = document.createElement('button');
+  btnOk.textContent = 'ตกลง';
+  btnOk.onclick = ()=>{
+    const chosen = selects.map(s=>s.value);
+    if(new Set(chosen).size < 4){ alert('ห้ามเลือกชื่อซ้ำ'); return; }
+
+    // *** MODIFICATION: ตามคำขอของผู้ใช้: ห้ามรีเซ็ตเวลาของผู้เล่นที่ออกจาก pending เดิม (เพราะเวลาจะเดินต่อเอง) ***
+    // const oldPendingIds = court.pending ? court.pending.teams.flat() : [];
+    
+    // ผู้เล่นที่อยู่ใน pending เดิม และไม่ได้ถูกเลือกเข้ามาใน pending ใหม่ ให้เริ่มจับเวลา "รอ"
+    // oldPendingIds.filter(pid => !chosen.includes(pid)).forEach(pid => {
+    //   const m = members.find(x => x.id === pid);
+    //   // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
+    //   if (m && m.status === 'มาแล้ว' && !inCourtIds.has(pid)) m.waitStartTime = Date.now();
+    // });
+    
+    court.pending = { teams: [[chosen[0], chosen[1]], [chosen[2], chosen[3]]] };
+
+    saveAll(); 
+    const oldCourtEl = courtsGrid.querySelector(`[data-court-id="${courtId}"]`);
+    if (oldCourtEl) {
+      courtsGrid.replaceChild(renderCourtElement(court), oldCourtEl);
+    } else {
+      renderCourts();
+    }
+    
+    document.body.removeChild(modal);
+    updateWaitTimes();
+  };
+  btnRow.appendChild(btnCancel);
+  btnRow.appendChild(btnOk);
+  box.appendChild(btnRow);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+// --- END: Manual Assign function ---
+
+/* Export CSV for history (unchanged) */
+function exportCSV(){
+  const map = {};
+  matchHistory.forEach(item => {
+    const key = pairKey(item.a,item.b);
+    map[key] = map[key] || {a:item.a,b:item.b,count:0,last:0};
+    map[key].count += 1; if(item.t > map[key].last) map[key].last = item.t;
+  });
+  let csv = 'nameA,nameB,count,lastDate\n';
+  Object.values(map).forEach(r => {
+    csv += `"${getMemberName(r.a)}","${getMemberName(r.b)}",${r.count},"${new Date(r.last).toLocaleString()}"\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'pair_history.csv'; a.click(); URL.revokeObjectURL(url);
+}
+
+// ... [Payment calculation and rendering logic (MODIFIED: Use gamesPlayed instead of plays.length)] ...
+function calculateEqualShare() {
+  const data = calcData.equal;
+  const presentMembers = getPresentMembers();
+  const numPresent = presentMembers.length;
+  const courtCost = parseFloat(data.courtCost) || 0;
+  const shuttlecockCost = parseFloat(data.shuttlecockCost) || 0;
+  const totalShuttlecocks = parseFloat(data.totalShuttlecocks) || 0;
+  const totalExpense = courtCost + (shuttlecockCost * totalShuttlecocks);
+  const expensePerPerson = numPresent > 0 ? totalExpense / numPresent : 0;
+  return {
+    totalExpense: totalExpense.toFixed(2),
+    expensePerPerson: expensePerPerson.toFixed(2),
+    numPresent
+  };
+}
+
+function renderEqualShare() {
+  const data = calcData.equal;
+  const container = document.getElementById('paymentModeContent');
+  const results = calculateEqualShare();
+  
+  let html = `
+    <div class="row" style="margin-bottom: 12px; align-items: flex-start;">
+      <div style="flex:1;">
+        <label class="small muted">ค่าสนามรวม (บาท)</label>
+        <input type="number" step="0.01" id="inputEqCourtCost" value="${data.courtCost}" onchange="updateCalcData('equal','courtCost',this.value)" placeholder="ค่าสนาม" style="width:100%; min-width: 80px;"/>
+      </div>
+      <div style="flex:1;">
+        <label class="small muted">ค่าลูกต่อลูก (บาท)</label>
+        <input type="number" step="0.01" id="inputEqSCCost" value="${data.shuttlecockCost}" onchange="updateCalcData('equal','shuttlecockCost',this.value)" placeholder="ค่าลูกต่อลูก" style="width:100%; min-width: 80px;"/>
+      </div>
+      <div style="flex:1;">
+        <label class="small muted">จำนวนลูกรวม (ลูก)</label>
+        <input type="number" step="1" id="inputEqTotalSC" value="${data.totalShuttlecocks}" onchange="updateCalcData('equal','totalShuttlecocks',this.value)" placeholder="จำนวนลูกรวม" style="width:100%; min-width: 80px;"/>
+      </div>
+    </div>
+
+    <div style="padding: 10px; background: var(--payment-box-bg); border-radius: 8px;">
+        <div class="small muted">สมาชิกที่มาแล้ว: <strong>${results.numPresent} คน</strong></div>
+        <div style="margin-top: 4px;">รายจ่ายทั้งหมด: <strong style="color: var(--accent);">${results.totalExpense} บาท</strong></div>
+        <div style="font-size: 1.2em; margin-top: 6px;">
+            **หารต่อคน: <strong style="color: var(--success);">${results.expensePerPerson} บาท</strong>**
+        </div>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+function calculatePerShuttlecockShare() {
+  const data = calcData.shuttlecock;
+  const presentMembers = getPresentMembers();
+  const courtCost = parseFloat(data.courtCost) || 0;
+  const shuttlecockCost = parseFloat(data.shuttlecockCost) || 0;
+  const totalShuttlecocksUsed = presentMembers.reduce((sum, m) => sum + (Math.round(m.shuttlecocksUsed || 0)), 0);
+
+  const results = presentMembers.map(m => {
+    // **MODIFIED: Use gamesPlayed**
+    const numPlays = Math.round(m.gamesPlayed || 0);
+    const numShuttlecocks = Math.round(m.shuttlecocksUsed || 0);
+    const memberShuttlecockExpense = numShuttlecocks * shuttlecockCost;
+    const totalMemberExpense = courtCost + memberShuttlecockExpense;
+    
+    return {
+      name: m.name,
+      numPlays: numPlays,
+      numShuttlecocks: numShuttlecocks,
+      expense: totalMemberExpense.toFixed(2),
+      warning: '' 
+    };
+  }).sort((a, b) => parseFloat(b.expense) - parseFloat(a.expense));
+
+  const totalShuttlecockExpense = totalShuttlecocksUsed * shuttlecockCost;
+  const totalCombinedExpense = courtCost * presentMembers.length + totalShuttlecockExpense;
+
+  return { 
+    totalShuttlecocksUsed: totalShuttlecocksUsed,
+    courtCostTotal: courtCost.toFixed(2),
+    totalShuttlecockExpense: totalShuttlecockExpense.toFixed(2), 
+    totalCombinedExpense: totalCombinedExpense.toFixed(2), 
+    results: results,
+    numPresent: presentMembers.length
+  };
+}
+
+function renderPerShuttlecockShare() {
+  const data = calcData.shuttlecock;
+  const container = document.getElementById('paymentModeContent');
+  const results = calculatePerShuttlecockShare();
+  
+  let html = `
+    <div class="row" style="margin-bottom: 12px; align-items: flex-start;">
+      <div style="flex:1;">
+        <label class="small muted">ค่าสนามรวม (บาท)</label>
+        <input type="number" step="0.01" id="inputSCCourtCost" value="${data.courtCost}" onchange="updateCalcData('shuttlecock','courtCost',this.value)" placeholder="ค่าสนามรวม" style="width:100%; min-width: 80px;"/>
+      </div>
+      <div style="flex:1;">
+        <label class="small muted">ค่าลูกต่อลูก (บาท)</label>
+        <input type="number" step="0.01" id="inputSCSCCost" value="${data.shuttlecockCost}" onchange="updateCalcData('shuttlecock','shuttlecockCost',this.value)" placeholder="ค่าลูกต่อลูก" style="width:100%; min-width: 80px;"/>
+      </div>
+      <div style="flex:1;">
+        </div>
+    </div>
+    
+    <div style="padding: 10px; background: var(--payment-box-bg); border-radius: 8px; margin-bottom: 12px;">
+        <div class="small muted">สมาชิกที่มาแล้ว: <strong>${results.numPresent} คน</strong></div>
+        <div style="margin-top: 4px;">ค่าสนามรวม: <strong style="color: var(--warning);">${results.courtCostTotal} บาท</strong></div>
+        <div style="margin-top: 4px;">ค่าลูกรวม: <strong style="color: var(--accent);">${results.totalShuttlecockExpense} บาท</strong> (จาก ${results.totalShuttlecocksUsed} ลูก)</div>
+        <div class="muted small" style="margin-top: 4px;">
+            *การคำนวณ: รายจ่ายต่อคน = ค่าสนามรวม + (จำนวนลูกที่ใช้ x ค่าลูกต่อลูก)
+        </div>
+    </div>
+    
+    <div style="overflow-x:auto;">
+        <table id="scTable" style="min-width: unset; font-size: 13px;">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">ชื่อ</th>
+                    <th style="width: 20%; text-align: right;">เกมที่ลง</th>
+                    <th style="width: 20%; text-align: right;">ลูกที่ใช้</th>
+                    <th style="width: 20%; text-align: right;">รายจ่ายรวม</th> </tr>
+            </thead>
+            <tbody>
+                ${results.results.map(r => `
+                    <tr>
+                        <td>${escapeHtml(r.name)}</td>
+                        <td style="text-align: right;">${r.numPlays}</td>
+                        <td style="text-align: right;">${r.numShuttlecocks}</td>
+                        <td style="text-align: right;">
+                            <strong style="color: var(--success);">${r.expense} บาท</strong>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+window.updateCalcData = function(mode, key, value) {
+  calcData[mode][key] = value; 
+  saveAll(); 
+  if (calcData.mode === 'equal') {
+    renderEqualShare();
+  } else {
+    renderPerShuttlecockShare();
+  }
+}
+
+window.setPaymentMode = function(mode) {
+  calcData.mode = mode;
+  saveAll();
+  renderPaymentSection();
+}
+
+function renderPaymentSection() {
+  const btnEq = document.getElementById('btnModeEqual');
+  const btnSC = document.getElementById('btnModeShuttlecock');
+  
+  if (!btnEq || !btnSC) return;
+
+  btnEq.style.backgroundColor = calcData.mode === 'equal' ? 'var(--success)' : 'var(--gray-button)'; 
+  btnSC.style.backgroundColor = calcData.mode === 'shuttlecock' ? 'var(--success)' : 'var(--gray-button)'; 
+  
+  if (calcData.mode === 'equal') {
+    renderEqualShare();
+  } else {
+    renderPerShuttlecockShare();
+  }
+}
+
+// ... [End of Payment calculation and rendering logic] ...
+
+
+function renderAll(){ 
+  renderMembers(); 
+  renderCourts(); 
+  renderHistory();
+  renderPaymentSection();
+}
+
+/* Buttons wiring (MODIFIED: Initial member data) */
+document.getElementById('btnAdd').onclick = ()=>{
+  const nameEl = document.getElementById('inputName'); const skillEl = document.getElementById('inputSkill');
+  const name = (nameEl.value || '').trim(); const skill = skillEl.value;
+  if(!name) return alert('กรุณากรอกชื่อ');
+  // **MODIFIED: Initialize with gamesPlayed: 0**
+  members.push({ id: uid(), name, skill, gamesPlayed: 0, status: 'ยังไม่มา', shuttlecocksUsed: 0 }); 
+  nameEl.value = ''; skillEl.value = 'กลาง';
+  saveAll(); renderAll();
+};
+
+document.getElementById('btnReset').onclick = ()=>{
+  if(!confirm('รีเซ็ตข้อมูลทั้งหมด (สมาชิก, สนาม, ประวัติ)?')) return;
+  members = []; courts = []; pairHistory = {}; matchHistory = []; calcData = load('bm_calcData') || { mode: 'equal', equal: { courtCost: 0, shuttlecockCost: 0, totalShuttlecocks: 0 }, shuttlecock: { courtCost: 0, shuttlecockCost: 0 } }; saveAll(); renderAll();
+};
+
+document.getElementById('btnAddCourt').onclick = ()=>{
+  const el = document.getElementById('inputCourt'); const name = (el.value || '').trim() || ('Court ' + (courts.length+1));
+  courts.push({ id: uid(), name, players: [], pending: null, shuttlecocksCount: 0 });
+  el.value = ''; saveAll(); renderAll();
+};
+
+document.getElementById('btnExport').onclick = exportCSV;
+document.getElementById('btnClearHistory').onclick = ()=>{
+  if(!confirm('จะลบประวัติการจับคู่ทั้งหมด ใช่หรือไม่?')) return;
+  pairHistory = {}; matchHistory = []; saveAll(); renderAll();
+};
+
+/* initial load */
+renderAll();
+// Update wait times every second efficiently
+setInterval(updateWaitTimes, 1000);
+
+/* Expose for debugging in console if needed */
+window._bm = { members, courts, pairHistory, matchHistory, renderAll, calcData };
+window.filterHistory = filterHistory;
+window.toggleTheme = toggleTheme; // Expose for accessibility/manual testing
+
+</script>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.tab-section').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.floating-tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+
+</body>
+<div style="text-align:center; margin: 20px 0;">
+  <p style="margin-bottom:10px; font-weight:bold; color:var(--text-primary);">
+    มาพูดคุยกันได้ อยากให้เพิ่มหรือแก้ไขระบบไหน
+  </p>
+  <a href="https://line.me/R/ti/g/xLRTuA8T8G" target="_blank"
+     style="background:#06C755; color:white; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:bold;">
+    เข้าร่วมกลุ่ม LINE
+  </a>
+</div>
+</html>
