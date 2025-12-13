@@ -739,6 +739,110 @@
 }
 </style>
 
+
+<style id="final-center-fix">
+/* ===== FINAL CENTER FIX ===== */
+#historyList{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.history-game-card{
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 18px;
+  padding: 20px 16px;
+  box-sizing: border-box;
+}
+
+.history-game-grid{
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 70px 1fr 1fr;
+  align-items: center;
+  text-align: center;
+}
+
+.history-game-vs{
+  text-align: center;
+  font-weight: 700;
+  opacity: .6;
+}
+</style>
+
+
+<style id="history-scoreboard-clean">
+/* ===== HISTORY SCOREBOARD (CLEAN & TRUE CENTER) ===== */
+
+#historyList{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Card */
+.history-game-card{
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 18px;
+  padding: 20px 16px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+}
+
+/* 2v2 scoreboard grid */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* flatten teams */
+.history-team{
+  display: contents;
+}
+
+/* player */
+.history-player{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-player strong{
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.history-player .level{
+  font-size: 12px;
+  opacity: .7;
+  margin-top: 2px;
+}
+
+/* VS */
+.history-game-vs{
+  font-weight: 700;
+  opacity: .6;
+  font-size: 15px;
+}
+
+/* time */
+.history-game-time{
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: .6;
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
