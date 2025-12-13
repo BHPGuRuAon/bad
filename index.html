@@ -604,6 +604,53 @@
   margin-left: 6px;
 }
 
+
+/* ===== Desktop ONLY: shrink number input width ===== */
+@media (min-width: 769px){
+  #membersTable td:nth-child(6) input[type="number"],
+  #membersTable td:nth-child(7) input[type="number"]{
+    width: auto !important;          /* ยกเลิก 100% / 60px */
+    min-width: 3.2ch !important;     /* พอดีเลข ไม่หาย */
+    max-width: 4ch !important;
+    padding: 2px 4px !important;
+    display: inline-block !important;
+    box-sizing: content-box !important;
+    text-align: center;
+  }
+}
+
+
+/* ===== Desktop: tighten column gaps (real spacing fix) ===== */
+@media (min-width: 769px){
+  #membersTable{
+    table-layout: fixed;
+  }
+
+  #membersTable th:nth-child(1),
+  #membersTable td:nth-child(1){ width:40px !important; }
+
+  #membersTable th:nth-child(2),
+  #membersTable td:nth-child(2){ width:100px !important; }
+
+  #membersTable th:nth-child(3),
+  #membersTable td:nth-child(3){ width:80px !important; }
+
+  #membersTable th:nth-child(4),
+  #membersTable td:nth-child(4){ width:70px !important; }
+
+  #membersTable th:nth-child(5),
+  #membersTable td:nth-child(5){ width:90px !important; }
+
+  #membersTable th:nth-child(6),
+  #membersTable td:nth-child(6){ width:55px !important; }
+
+  #membersTable th:nth-child(7),
+  #membersTable td:nth-child(7){ width:55px !important; }
+
+  #membersTable th:nth-child(8),
+  #membersTable td:nth-child(8){ width:60px !important; }
+}
+
 </style>
 
 <style id="anchor-scroll-fix">
