@@ -2391,6 +2391,48 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 </script>
 
+
+<style id="skill-select-hard-fix">
+/* make select clearly readable */
+#inputSkill{
+  min-width:200px;
+  height:44px;
+  font-size:15px;
+}
+#inputSkill option{
+  font-size:15px;
+  padding:6px 10px;
+}
+</style>
+
+<script id="skill-select-hard-js">
+/* ===== HARD FIX: FORCE TEXT + ICON IN SKILL SELECT ===== */
+const SKILL_LABELS = ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'];
+const SKILL_ICONS = {
+  'เบามาก':'🔵',
+  'เบา':'🟢',
+  'กลาง':'🟡',
+  'กลางหนัก':'🟠',
+  'หนัก':'🔴'
+};
+
+function hardFixSkillSelect(){
+  const sel = document.getElementById('inputSkill');
+  if(!sel) return;
+
+  // rebuild options completely
+  sel.innerHTML = '';
+  SKILL_LABELS.forEach(label=>{
+    const opt = document.createElement('option');
+    opt.value = label;
+    opt.textContent = `${SKILL_ICONS[label]} ${label}`;
+    sel.appendChild(opt);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', hardFixSkillSelect);
+</script>
+
 </body>
 <div style="text-align:center; margin: 20px 0;">
   <p style="margin-bottom:10px; font-weight:bold; color:var(--text-primary);">
