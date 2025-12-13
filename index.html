@@ -452,6 +452,22 @@
 .skill-กลางหนัก { color:#ef4444; }
 .skill-หนัก { color:#7c2d12; }
 
+
+/* ===== Skill select icon size fix ===== */
+#membersTable select {
+  font-size: 14px; /* desktop */
+  padding: 4px;
+  text-align: center;
+}
+
+/* Mobile: make icon same size as text */
+@media (max-width: 640px){
+  #membersTable select {
+    font-size: 12px;
+    padding: 2px;
+  }
+}
+
 </style>
 
 <style id="anchor-scroll-fix">
