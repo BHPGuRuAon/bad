@@ -439,6 +439,19 @@
     margin-top: 10px;
   }
 
+
+/* ===== Skill Icon ===== */
+.skill-icon {
+  font-size: 18px;
+  cursor: pointer;
+  user-select: none;
+}
+.skill-เบามาก { color:#60a5fa; }
+.skill-เบา { color:#34d399; }
+.skill-กลาง { color:#facc15; }
+.skill-กลางหนัก { color:#ef4444; }
+.skill-หนัก { color:#7c2d12; }
+
 </style>
 
 <style id="anchor-scroll-fix">
@@ -886,11 +899,11 @@
         <div class="row">
           <input id="inputName" type="text" placeholder="ชื่อสมาชิก" />
           <select id="inputSkill">
-            <option>เบามาก</option>
-            <option>เบา</option>
-            <option selected>กลาง</option>
-            <option>กลางหนัก</option>
-            <option>หนัก</option>
+            <option value="เบามาก">🔵 เบามาก</option>
+            <option value="เบา">🟢 เบา</option>
+            <option value="กลาง" selected>🟡 กลาง</option>
+            <option value="กลางหนัก">🔴 กลางหนัก</option>
+            <option value="หนัก">👿 หนัก</option>
           </select>
           <button id="btnAdd">เพิ่มสมาชิก</button>
           <button id="btnReset" class="red">รีเซ็ตทั้งหมด</button>
@@ -975,6 +988,18 @@
   calcData: { mode, equal:{courtCost, scCost, totalSC}, shuttlecock:{courtCost, scCost} }
 */
 const SKILL_VALUES = { 'เบามาก': 1, 'เบา': 2, 'กลาง': 3, 'กลางหนัก': 4, 'หนัก': 5 };
+
+function skillToIcon(skill){
+  switch(skill){
+    case 'เบามาก': return '🔵';
+    case 'เบา': return '🟢';
+    case 'กลาง': return '🟡';
+    case 'กลางหนัก': return '🔴';
+    case 'หนัก': return '👿';
+    default: return '⚪';
+  }
+}
+
 function uid(){ return Math.random().toString(36).slice(2,9); }
 function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
@@ -1158,18 +1183,24 @@ function renderMembers(){
     tdName.appendChild(nameInput);
     tr.appendChild(tdName);
 
-    // ระดับมือ
+    // ระดับมือ (แสดงเป็นไอคอน)
     const tdSkill = document.createElement('td');
-    const selSkill = document.createElement('select');
-    ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'].forEach(s => {
-      const op = document.createElement('option');
-      op.value = s;
-      op.textContent = s;
-      if(s === m.skill) op.selected = true;
-      selSkill.appendChild(op);
-    });
-    selSkill.onchange = () => { m.skill = selSkill.value; saveAll(); };
-    tdSkill.appendChild(selSkill);
+    const icon = document.createElement('span');
+    icon.className = `skill-icon skill-${m.skill}`;
+    icon.textContent = skillToIcon(m.skill);
+    icon.title = m.skill;
+
+    icon.onclick = () => {
+      const skills = ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'];
+      const idx = skills.indexOf(m.skill);
+      m.skill = skills[(idx + 1) % skills.length];
+      saveAll();
+      renderMembers();
+      renderCourts();
+      renderHistory();
+    };
+
+    tdSkill.appendChild(icon);
     tr.appendChild(tdSkill);
 
 
@@ -2276,120 +2307,10 @@ body{
 }
 </style>
 
-<script id="skill-badge-replace-js">
-const SKILL_MAP = {
-  'เบามาก':   {c:'#6ecbff', i:'🔵'},
-  'เบา':      {c:'#4caf50', i:'🟢'},
-  'กลาง':     {c:'#ffeb3b', i:'🟡'},
-  'กลางหนัก': {c:'#ff9800', i:'🟠'},
-  'หนัก':     {c:'#f44336', i:'🔴'},
-};
-
-function makeDot(skill){
-  const s = SKILL_MAP[skill];
-  if(!s) return null;
-  const span = document.createElement('span');
-  span.className = 'skill-dot';
-  span.style.background = s.c;
-  span.textContent = s.i;
-  span.title = skill;
-  return span;
-}
-
-function replaceSkillText(){
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-  const texts = [];
-  while(walker.nextNode()) texts.push(walker.currentNode);
-
-  texts.forEach(t => {
-    const val = t.nodeValue && t.nodeValue.trim();
-    if(!SKILL_MAP[val]) return;
-
-    const parent = t.parentElement;
-    if(!parent) return;
-
-    // EXCEPTION: add member section (keep text + icon)
-    if(parent.closest('#addMember, .add-member, #memberForm')){
-      if(parent.dataset.done) return;
-      parent.dataset.done = '1';
-      const wrap = document.createElement('span');
-      wrap.className = 'skill-with-text';
-      wrap.appendChild(makeDot(val));
-      wrap.appendChild(document.createTextNode(val));
-      parent.replaceChild(wrap, t);
-      return;
-    }
-
-    // DEFAULT: replace text with icon only
-    const dot = makeDot(val);
-    if(!dot) return;
-    parent.replaceChild(dot, t);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', replaceSkillText);
-</script>
 
 
-<script id="skill-badge-select-fix">
-/* ===== FIX: KEEP TEXT + ICON IN SELECT / OPTION ===== */
 
-function applySkillIconsToSelect(){
-  document.querySelectorAll('select').forEach(sel=>{
-    sel.querySelectorAll('option').forEach(opt=>{
-      const val = opt.textContent.trim();
-      if(!SKILL_MAP[val]) return;
 
-      // Avoid duplicate
-      if(opt.dataset.iconized) return;
-      opt.dataset.iconized = '1';
-
-      // Prepend emoji icon but KEEP text
-      opt.textContent = `${SKILL_MAP[val].i} ${val}`;
-    });
-  });
-}
-
-// Override replaceSkillText to SKIP select/option entirely
-function replaceSkillText(){
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-  const texts = [];
-  while(walker.nextNode()) texts.push(walker.currentNode);
-
-  texts.forEach(t => {
-    const val = t.nodeValue && t.nodeValue.trim();
-    if(!SKILL_MAP[val]) return;
-
-    const parent = t.parentElement;
-    if(!parent) return;
-
-    // SKIP select / option
-    if(parent.closest('select, option')) return;
-
-    // EXCEPTION: add member section
-    if(parent.closest('#addMember, .add-member, #memberForm')){
-      if(parent.dataset.done) return;
-      parent.dataset.done = '1';
-      const wrap = document.createElement('span');
-      wrap.className = 'skill-with-text';
-      wrap.appendChild(makeDot(val));
-      wrap.appendChild(document.createTextNode(val));
-      parent.replaceChild(wrap, t);
-      return;
-    }
-
-    // DEFAULT: icon only
-    const dot = makeDot(val);
-    if(!dot) return;
-    parent.replaceChild(dot, t);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  replaceSkillText();
-  applySkillIconsToSelect();
-});
-</script>
 
 
 <style id="skill-select-hard-fix">
@@ -2405,33 +2326,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 }
 </style>
 
-<script id="skill-select-hard-js">
-/* ===== HARD FIX: FORCE TEXT + ICON IN SKILL SELECT ===== */
-const SKILL_LABELS = ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'];
-const SKILL_ICONS = {
-  'เบามาก':'🔵',
-  'เบา':'🟢',
-  'กลาง':'🟡',
-  'กลางหนัก':'🟠',
-  'หนัก':'🔴'
-};
 
-function hardFixSkillSelect(){
-  const sel = document.getElementById('inputSkill');
-  if(!sel) return;
-
-  // rebuild options completely
-  sel.innerHTML = '';
-  SKILL_LABELS.forEach(label=>{
-    const opt = document.createElement('option');
-    opt.value = label;
-    opt.textContent = `${SKILL_ICONS[label]} ${label}`;
-    sel.appendChild(opt);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', hardFixSkillSelect);
-</script>
 
 
 <script id="waitlist-safe-name-fix">
@@ -2441,8 +2336,8 @@ const SKILL_ICON_MAP = {
   'เบามาก': '🔵',
   'เบา': '🟢',
   'กลาง': '🟡',
-  'กลางหนัก': '🟠',
-  'หนัก': '🔴'
+  'กลางหนัก': '🔴',
+  'หนัก': '👿'
 };
 
 function cleanWaitText(raw){
@@ -2477,6 +2372,69 @@ function applyFix(){
 
 document.addEventListener('DOMContentLoaded', applyFix);
 document.addEventListener('click', applyFix);
+</script>
+
+
+<script id="skill-icon-lock-clean">
+/*
+  FINAL FIX:
+  - Never touch <select> or <option> content at all
+  - Convert skill text -> icon ONLY in normal text nodes
+  - No innerHTML patching (too aggressive)
+  - Use MutationObserver + text-node replace
+*/
+(function(){
+  const MAP = {
+    'เบามาก':'🔵',
+    'เบา':'🟢',
+    'กลาง':'🟡',
+    'กลางหนัก':'🔴',
+    'หนัก':'👿'
+  };
+
+  function isInSelect(node){
+    return node.parentElement && node.parentElement.closest('select, option');
+  }
+
+  function replaceTextNode(tn){
+    if(!tn || tn.nodeType !== Node.TEXT_NODE) return;
+    if(isInSelect(tn)) return;
+
+    let v = tn.nodeValue;
+    if(!v) return;
+
+    // replace longest words first
+    v = v.replace(/กลางหนัก/g, MAP['กลางหนัก']);
+    v = v.replace(/เบามาก/g, MAP['เบามาก']);
+    v = v.replace(/หนัก/g, MAP['หนัก']);
+    v = v.replace(/กลาง/g, MAP['กลาง']);
+    v = v.replace(/เบา/g, MAP['เบา']);
+
+    tn.nodeValue = v;
+  }
+
+  function scan(root){
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    let n;
+    while(n = walker.nextNode()){
+      replaceTextNode(n);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    scan(document.body);
+
+    const mo = new MutationObserver(muts=>{
+      muts.forEach(m=>{
+        m.addedNodes.forEach(n=>{
+          if(n.nodeType === 3) replaceTextNode(n);
+          else if(n.nodeType === 1) scan(n);
+        });
+      });
+    });
+    mo.observe(document.body, {childList:true, subtree:true});
+  });
+})();
 </script>
 
 </body>
