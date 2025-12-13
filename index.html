@@ -468,6 +468,77 @@
   }
 }
 
+
+/* ===== Final fix: skill icon same size as table text ===== */
+#membersTable select {
+  font-size: 13px;      /* same as table text */
+  line-height: 1.2;
+  padding: 2px 4px;
+}
+
+/* Mobile portrait */
+@media (max-width: 640px){
+  #membersTable select {
+    font-size: 11px;    /* match mobile table text */
+    padding: 2px;
+  }
+}
+
+
+/* ===== FORCE skill icon size (override all) ===== */
+#membersTable td:nth-child(3) select {
+  font-size: 11px !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  height: 20px !important;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* shrink emoji rendering itself */
+#membersTable td:nth-child(3) select option {
+  font-size: 11px !important;
+}
+
+/* Mobile even smaller */
+@media (max-width: 640px){
+  #membersTable td:nth-child(3) select {
+    font-size: 10px !important;
+    height: 18px !important;
+  }
+  #membersTable td:nth-child(3) select option {
+    font-size: 10px !important;
+  }
+}
+
+
+/* ===== Skill icon size: Desktop vs Mobile ===== */
+
+/* Desktop / Laptop */
+@media (min-width: 641px){
+  #membersTable td:nth-child(3) select {
+    font-size: 14px !important;   /* เท่าข้อความตารางบนคอม */
+    height: 26px !important;
+    padding: 2px 6px !important;
+  }
+  #membersTable td:nth-child(3) select option {
+    font-size: 14px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px){
+  #membersTable td:nth-child(3) select {
+    font-size: 10px !important;   /* เล็กลงบนมือถือ */
+    height: 18px !important;
+    padding: 0 !important;
+  }
+  #membersTable td:nth-child(3) select option {
+    font-size: 10px !important;
+  }
+}
+
 </style>
 
 <style id="anchor-scroll-fix">
