@@ -94,7 +94,7 @@
       vertical-align:middle
   } 
   th.play, td.play{width:34px;text-align:center}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px}
+  
   .court{
       padding:12px;
       border-radius:10px;
@@ -139,21 +139,151 @@
   /* ****************************************************** */
   /* *** Media Queries and other existing styles *** */
   /* ****************************************************** */
+  
+  /* NEW/MODIFIED: Rule for mobile landscape / small tablets (641px to 1024px) */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    /* Table Adjustments */
+    #membersTable {
+      min-width: unset !important; 
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    /* Override inline th styles for better landscape fit */
+    #membersTable thead th:nth-child(1),
+    #membersTable tbody td:nth-child(1) { width: 40px !important; } /* ลำดับ */
+
+    #membersTable thead th:nth-child(2),
+    #membersTable tbody td:nth-child(2) { 
+        width: 80px !important; /* ชื่อ */
+        min-width: 80px !important;
+    }
+
+    #membersTable thead th:nth-child(3),
+    #membersTable tbody td:nth-child(3) { width: 100px !important; } /* ระดับมือ */
+    
+    /* MODIFIED: Columns 4 (รอ), 5 (สถานะ) now 50px */
+    #membersTable th:nth-child(4),
+    #membersTable tbody td:nth-child(4),
+    #membersTable th:nth-child(5),
+    #membersTable tbody td:nth-child(5) {
+      width: 50px !important; 
+    }
+    
+    /* Column 6 (ลงสนาม) now 50px */
+    #membersTable th:nth-child(6), /* ลงสนาม */
+    #membersTable tbody td:nth-child(6) {
+      width: 50px !important; 
+    }
+    
+    /* Column 7 (ลูกที่ใช้) is increased to 70px for input visibility */
+    #membersTable th:nth-child(7), /* ลูกที่ใช้ */
+    #membersTable tbody td:nth-child(7) {
+      width: 70px !important; 
+    }
+    
+    /* Columns 8-16 (1-9 checkboxes) now 15px */
+    /* REMOVED CHECKBOX COLUMNS */
+    
+    /* MODIFIED: Column 17 (จัดการ) now 70px */
+    #membersTable thead th:nth-child(8),
+    #membersTable tbody td:nth-child(8) { width: 70px !important; } 
+
+    /* Input/Select Adjustments */
+    #membersTable input[type="text"] {
+        font-size: 13px;
+    }
+    
+    #membersTable select {
+        font-size: 11px;
+        padding: 4px 2px;
+    }
+    
+    #paymentModeContent #scTable {
+        min-width: unset !important;
+    }
+
+    /* Court Control Adjustments (NEW/MODIFIED) */
+    .court > div:first-child {
+        flex-direction: column; /* เรียงจากบนลงล่าง เพื่อให้มีพื้นที่มากขึ้น */
+        align-items: flex-start;
+        gap: 8px; /* เพิ่มช่องว่างระหว่างส่วนชื่อและส่วนปุ่ม */
+    }
+    
+    /* Input Court Name (to take up full width) */
+    .court input[type="text"] {
+        width: 100px !important; /* กำหนดความกว้างตามปกติ */
+        font-size: 16px !important;
+    }
+    
+    /* Controls container to spread out */
+    .court .controls-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 4px; /* ช่องว่างระหว่างกลุ่มปุ่ม */
+        flex-wrap: wrap; /* ให้ปุ่มลงบรรทัดใหม่ได้ถ้าจำเป็น */
+    }
+    
+    /* Shuttlecock Group (number + button) */
+    .court .shuttlecock-group {
+        display: flex;
+        align-items: center;
+        gap: 4px; 
+    }
+    .court .shuttlecock-group .shuttlecock-display {
+        font-size: 14px;
+        margin-right: 0;
+    }
+    
+    /* Individual Buttons in court */
+    .court button {
+      padding: 5px 8px !important; /* ลดขนาดปุ่ม */
+      font-size: 12px !important;
+      white-space: nowrap;
+      flex-grow: 1; /* ให้ปุ่มขยายตัวเท่าๆ กันในกลุ่มปุ่ม */
+    }
+    
+    /* Manual/Arrange/Empty/Remove Group */
+    .court .action-buttons {
+        display: flex;
+        gap: 4px;
+        flex-grow: 1; /* ให้กลุ่มปุ่มขยายตัวเท่าๆ กัน */
+        min-width: 170px; /* ป้องกันการหดตัวมากเกินไป */
+    }
+    .court .action-buttons button {
+        flex: 1 1 0; /* ปุ่มขยายตัวเต็มที่ในกลุ่ม */
+        margin-left: 0 !important;
+    }
+  }
+
+
   @media(max-width:640px){
     th,td{font-size:12px} 
     h1{font-size:18px}
     #membersTable {
         min-width: 900px;
     }
+    
+    /* NEW/MODIFIED: Minimized column widths for portrait to reduce horizontal scroll distance */
+    #membersTable thead th:nth-child(1), #membersTable tbody td:nth-child(1) { width: 40px !important; } /* ลำดับ */
     #membersTable thead th:nth-child(2),
     #membersTable tbody td:nth-child(2) {
       display: table-cell;
       min-width: 120px;
     }
-    #membersTable th:nth-child(n+7):nth-child(-n+15),
-    #membersTable tbody td:nth-child(n+7):nth-child(-n+15) {
-        width: 25px !important; 
-    }
+    #membersTable thead th:nth-child(3), #membersTable tbody td:nth-child(3) { width: 100px !important; } /* ระดับมือ */
+    #membersTable th:nth-child(4), #membersTable tbody td:nth-child(4) { width: 60px !important; } /* รอ (Minimized) */
+    #membersTable th:nth-child(5), #membersTable tbody td:nth-child(5) { width: 80px !important; } /* สถานะ */
+    #membersTable th:nth-child(6), #membersTable tbody td:nth-child(6) { width: 40px !important; } /* ลงสนาม (Minimized) */
+    #membersTable th:nth-child(7), #membersTable tbody td:nth-child(7) { width: 60px !important; } /* ลูกที่ใช้ (Minimized) */
+
+    /* Columns 8-16 (1-9 checkboxes) now 25px */
+    /* REMOVED CHECKBOX COLUMNS */
+    
+    #membersTable th:nth-child(8), #membersTable tbody td:nth-child(8) { width: 70px !important; } /* จัดการ */
+    
+    /* ... rest of the portrait CSS ... */
     #paymentModeContent #scTable {
         min-width: unset !important;
         table-layout: fixed;
@@ -168,7 +298,7 @@
     #paymentModeContent #scTable th:nth-child(1), #paymentModeContent #scTable td:nth-child(1) { width: 40%; }
     #paymentModeContent #scTable th:nth-child(2), #paymentModeContent #scTable td:nth-child(2) { width: 15%; }
     #paymentModeContent #scTable th:nth-child(3), #paymentModeContent #scTable td:nth-child(3) { width: 15%; }
-    #paymentModeContent #scTable th:nth-child(4), #paymentModeContent #scTable td:nth-child(4) { width: 30%; }
+    #paymentModeContent #scTable th:nth-child(4), #membersTable td:nth-child(4) { width: 30%; }
     .court > div:first-child {
         flex-wrap: nowrap;
     }
@@ -191,7 +321,551 @@
     overflow-y: auto;
     margin-top: 10px;
   }
+
+	/* ****************************************************** */
+  /* *** แก้ไขส่วนตารางสมาชิกสำหรับมือถือแนวตั้ง (max-width:640px) *** */
+  /* ****************************************************** */
+  @media(max-width:640px){
+    th,td{font-size:12px; padding: 4px;} /* ลด padding เพื่อให้มีพื้นที่มากขึ้น */
+    h1{font-size:18px}
+    
+    /* 1. บังคับให้ตารางปรับขนาดตามหน้าจอและนำ min-width ออก */
+    #membersTable {
+        min-width: unset !important; /* ลบ min-width ที่ทำให้เกิดการเลื่อน */
+        width: 100%;
+        table-layout: fixed; /* บังคับให้ตารางใช้ความกว้างที่กำหนด */
+        overflow: hidden; 
+    }
+
+    /* 2. ปรับขนาดคอลัมน์ให้เล็กลงมากที่สุดเพื่อให้อยู่ในหน้าจอมือถือแนวตั้ง (~360px) */
+    
+    /* ลำดับ (Index) */
+    #membersTable thead th:nth-child(1), 
+    #membersTable tbody td:nth-child(1) { width: 30px !important; } 
+    
+    /* ชื่อ (Name) - ให้พื้นที่มากที่สุดที่สามารถทำได้ */
+    #membersTable thead th:nth-child(2), 
+    #membersTable tbody td:nth-child(2) { 
+      width: 80px !important; 
+      min-width: 80px !important; 
+      display: table-cell;
+    } 
+    
+    /* ระดับมือ (Skill) */
+    #membersTable thead th:nth-child(3), 
+    #membersTable tbody td:nth-child(3) { width: 80px !important; } 
+    
+    /* รอ (Wait Time) */
+    #membersTable th:nth-child(4), 
+    #membersTable tbody td:nth-child(4) { width: 40px !important; } 
+    
+    /* สถานะ (Status) */
+    #membersTable th:nth-child(5), 
+    #membersTable tbody td:nth-child(5) { width: 60px !important; } 
+    
+    /* ลงสนาม (Games Played) */
+    #membersTable th:nth-child(6), 
+    #membersTable tbody td:nth-child(6) { width: 30px !important; } 
+    
+    /* ลูกที่ใช้ (Shuttlecocks Used) */
+    #membersTable th:nth-child(7), 
+    #membersTable tbody td:nth-child(7) { width: 30px !important; } 
+
+    /* จัดการ (Manage) */
+    #membersTable th:nth-child(8), 
+    #membersTable tbody td:nth-child(8) { width: 30px !important; } 
+    
+    /* 3. ปรับขนาด Input/Select/Button ภายในตารางให้เล็กลงตามคอลัมน์ใหม่ */
+    #membersTable input[type="text"],
+    #membersTable input[type="number"],
+    #membersTable select {
+        font-size: 11px;
+        padding: 2px;
+        height: 20px;
+        box-sizing: border-box;
+        width: 100% !important;
+        min-width: unset;
+    }
+    
+    #membersTable button {
+        padding: 2px 4px !important;
+        font-size: 10px;
+        width: 100% !important;
+        min-width: unset;
+        white-space: nowrap;
+    }
+    
+    #membersTable .wait-time {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    /* ... rest of the portrait CSS (unchanged) ... */
+    #paymentModeContent #scTable {
+        min-width: unset !important;
+        table-layout: fixed;
+        width: 100%;
+    }
+    #paymentModeContent #scTable th, #paymentModeContent #scTable td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 6px 4px;
+    }
+    #paymentModeContent #scTable th:nth-child(1), #paymentModeContent #scTable td:nth-child(1) { width: 40%; }
+    #paymentModeContent #scTable th:nth-child(2), #paymentModeContent #scTable td:nth-child(2) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(3), #paymentModeContent #scTable td:nth-child(3) { width: 15%; }
+    #paymentModeContent #scTable th:nth-child(4), #membersTable td:nth-child(4) { width: 30%; }
+    .court > div:first-child {
+        flex-wrap: nowrap;
+    }
+    .court > div:first-child > div:last-child {
+        gap: 4px;
+    }
+    .court button {
+      padding: 4px 6px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .court input[type="text"] {
+        width: 70px !important;
+        padding: 4px 6px !important;
+        font-size: 16px !important;
+    }
+  }
+  .history-scroll {
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+
 </style>
+
+<style id="anchor-scroll-fix">
+/* Fix anchor overscroll so section titles are visible */
+#membersCard,
+#courtsGrid,
+#historyList,
+#paymentCard {
+  scroll-margin-top: 80px; /* offset for fixed bottom tab bar / header spacing */
+}
+
+/* Extra safety for mobile */
+@media (max-width: 768px){
+  #membersCard,
+  #courtsGrid,
+  #historyList,
+  #paymentCard {
+    scroll-margin-top: 96px;
+  }
+}
+</style>
+
+
+<style id="history-scroll-fix-strong">
+/* Stronger offset specifically for History */
+#historyList {
+  scroll-margin-top: 140px !important;
+}
+
+/* If the real heading is just before historyList, offset it too */
+#historyList h3,
+#historyList h2 {
+  scroll-margin-top: 140px !important;
+}
+
+/* Mobile tweak */
+@media (max-width: 768px){
+  #historyList {
+    scroll-margin-top: 160px !important;
+  }
+}
+</style>
+
+
+<style id="history-container-tall">
+/* Make history section taller so user scrolls less on page */
+#historyList,
+#historySection {
+  min-height: 70vh;          /* tall visible area */
+  max-height: 70vh;          /* lock height */
+  overflow-y: auto;          /* scroll inside history */
+  padding: 16px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+}
+
+/* Desktop: even taller */
+@media (min-width: 1024px){
+  #historyList,
+  #historySection {
+    min-height: 75vh;
+    max-height: 75vh;
+  }
+}
+</style>
+
+
+<style id="history-card-style">
+/* History game card */
+.history-game-card{
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+/* Grid inside card */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.history-game-left strong,
+.history-game-right strong{
+  font-size: 15px;
+}
+
+.history-game-right{
+  text-align: right;
+}
+
+.history-game-vs{
+  font-weight: bold;
+  opacity: .7;
+}
+
+.history-game-time{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .6;
+}
+</style>
+
+
+<style id="history-2v2-card">
+.history-game-card{
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.history-team{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
+}
+
+.history-player strong{
+  font-size: 14px;
+}
+
+.history-player .level{
+  font-size: 12px;
+  opacity: .65;
+}
+
+.history-game-vs{
+  font-weight: bold;
+  opacity: .7;
+}
+
+.history-game-time{
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: .6;
+  text-align: center;
+}
+</style>
+
+
+<style id="history-2v2-equal-spacing">
+/* Equal spacing for 2v2 history cards */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr; /* left | VS | right = equal sides */
+  gap: 0;
+  align-items: center;
+}
+
+.history-team{
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two players equal width */
+  column-gap: 16px;
+}
+
+.history-game-vs{
+  text-align: center;
+  font-weight: 700;
+  opacity: .7;
+}
+
+.history-game-time{
+  margin-top: 10px;
+  text-align: center;
+}
+</style>
+
+
+<style id="history-2v2-responsive-fix">
+/* ===== Base card ===== */
+.history-game-card{
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+/* ===== DESKTOP / TABLET ===== */
+@media (min-width: 769px){
+  .history-game-grid{
+    display: grid;
+    grid-template-columns: 1fr 72px 1fr; /* equal sides */
+    align-items: center;
+  }
+
+  .history-team{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .history-player{
+    text-align: left;
+  }
+
+  .history-game-vs{
+    text-align: center;
+    font-weight: 700;
+    opacity: .7;
+  }
+
+  .history-game-time{
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: .6;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px){
+  .history-game-grid{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .history-team{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .history-game-vs{
+    text-align: center;
+    font-weight: 700;
+    opacity: .6;
+    margin: 4px 0;
+  }
+
+  .history-game-time{
+    text-align: center;
+    margin-top: 6px;
+    font-size: 11px;
+    opacity: .6;
+  }
+}
+
+/* ===== Player text ===== */
+.history-player strong{
+  font-size: 14px;
+}
+.history-player .level{
+  font-size: 12px;
+  opacity: .65;
+}
+</style>
+
+
+<style id="history-scoreboard-layout">
+/* ===== SCOREBOARD 2v2 (DESKTOP + MOBILE) ===== */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr 60px 1fr 1fr;
+  align-items: center;
+  text-align: center;
+}
+
+.history-player{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-player strong{
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.history-player .level{
+  font-size: 12px;
+  opacity: .7;
+  margin-top: 2px;
+}
+
+.history-game-vs{
+  font-weight: 700;
+  font-size: 15px;
+  opacity: .6;
+}
+
+.history-game-time{
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: .6;
+}
+</style>
+
+
+<style id="final-center-fix">
+/* ===== FINAL CENTER FIX ===== */
+#historyList{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.history-game-card{
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 18px;
+  padding: 20px 16px;
+  box-sizing: border-box;
+}
+
+.history-game-grid{
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 70px 1fr 1fr;
+  align-items: center;
+  text-align: center;
+}
+
+.history-game-vs{
+  text-align: center;
+  font-weight: 700;
+  opacity: .6;
+}
+</style>
+
+
+<style id="history-scoreboard-clean">
+/* ===== HISTORY SCOREBOARD (CLEAN & TRUE CENTER) ===== */
+
+#historyList{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Card */
+.history-game-card{
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 18px;
+  padding: 20px 16px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+}
+
+/* 2v2 scoreboard grid */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* flatten teams */
+.history-team{
+  display: contents;
+}
+
+/* player */
+.history-player{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-player strong{
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.history-player .level{
+  font-size: 12px;
+  opacity: .7;
+  margin-top: 2px;
+}
+
+/* VS */
+.history-game-vs{
+  font-weight: 700;
+  opacity: .6;
+  font-size: 15px;
+}
+
+/* time */
+.history-game-time{
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: .6;
+}
+</style>
+
+
+<style id="court-grid-final">
+/* ===== COURT GRID FINAL FIX ===== */
+
+/* Desktop / Laptop */
+@media (min-width: 769px){
+  .grid#courtsGrid{
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px){
+  .grid#courtsGrid{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
@@ -232,16 +906,8 @@
               <th style="width:120px">ระดับมือ</th>
               <th style="width:90px">รอ</th>
               <th style="width:90px">สถานะ</th>
-              <th style="width:90px">ลูกที่ใช้</th> 
-              <th style="width:20px">1</th>
-              <th style="width:20px">2</th>
-              <th style="width:20px">3</th>
-              <th style="width:20px">4</th>
-              <th style="width:20px">5</th>
-              <th style="width:20px">6</th>
-              <th style="width:20px">7</th>
-              <th style="width:20px">8</th>
-              <th style="width:20px">9</th>
+              <th style="width:70px">ลงสนาม</th> 
+              <th style="width:90px">ลูกที่ใช้</th>
               <th style="width:80px">จัดการ</th>
             </tr>
           </thead>
@@ -300,7 +966,9 @@
 
 <script>
 /* Data structures:
-  members: [{id,name,skill,plays:[bool*9], shuttlecocksUsed: number, waitStartTime: timestamp}]
+  // MODIFIED: 'plays' is now 'gamesPlayed' (number) for unlimited game count. 
+  // 'plays' array is REMOVED from the data structure, but kept in code for skill-based sorting fallback.
+  members: [{id,name,skill,gamesPlayed:number, shuttlecocksUsed: number, waitStartTime: timestamp, status}]
   courts: [{id,name,players:[], pending:null, shuttlecocksCount: number}] 
   pairHistory: {"id|id":count}
   matchHistory: [{a:id,b:id,t:timestamp}] 
@@ -328,6 +996,26 @@ let calcData = load('bm_calcData') || {
   }
 };
 
+// **MODIFICATION: Data migration/cleanup for old 'plays' array**
+members = members.map(m => {
+    // If gamesPlayed is missing but plays array exists, calculate initial gamesPlayed
+    if (m.gamesPlayed === undefined && Array.isArray(m.plays)) {
+        m.gamesPlayed = m.plays.filter(Boolean).length;
+    } else if (m.gamesPlayed === undefined) {
+        m.gamesPlayed = 0; // Initialize to 0 if neither exists
+    }
+    // Remove the old 'plays' array to simplify data structure, but keep it available 
+    // for legacy code that might rely on its structure for sorting/logic (will be handled below)
+    delete m.plays; 
+    
+    // Ensure status and shuttlecocksUsed are present
+    if(!m.status) m.status = 'ยังไม่มา';
+    if(m.shuttlecocksUsed === undefined) m.shuttlecocksUsed = 0;
+    
+    return m;
+});
+
+
 function saveAll(){ 
   save('bm_members', members); 
   save('bm_courts', courts); 
@@ -341,7 +1029,7 @@ const courtsGrid = document.getElementById('courtsGrid');
 const historyList = document.getElementById('historyList');
 
 /* ****************************************************** */
-/* *** การแก้ไขใหม่: Theme Toggle Functions *** */
+/* *** Theme Toggle Functions *** */
 /* ****************************************************** */
 function setInitialTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -384,18 +1072,26 @@ function getPresentMembers() {
   return members.filter(m => m.status === 'มาแล้ว');
 }
 
+/**
+ * *** MODIFIED: formatTime (MM:SS, max 30:00) ***
+ */
 function formatTime(seconds) {
-  const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+  const MAX_SECONDS = 1800; // 30 minutes
+  
+  if (seconds >= MAX_SECONDS) {
+    return '30:00';
+  }
+
+  const m = String(Math.floor(seconds / 60)).padStart(2, '0');
   const s = String(seconds % 60).padStart(2, '0');
-  return `${h}:${m}:${s}`;
+  return `${m}:${s}`;
 }
 
 const memberRows = new Map();
 let sortedHistoryRows = [];
 
 /**
- * *** การแก้ไขหลัก: ทำให้เวลา "รอ" นับตลอดเวลาสำหรับคนที่ "มาแล้ว" และ "ไม่ยืนยันในสนาม" เท่านั้น ***
+ * *** MODIFIED: Wait time logic ***
  */
 function updateWaitTimes() {
   const inCourtIds = getPlayersInCourtIds(); // IDs ที่อยู่ในสถานะ court.players
@@ -407,6 +1103,7 @@ function updateWaitTimes() {
     const waitTimeEl = rowEl.querySelector('.wait-time');
     
     // Timer runs if the status is "มาแล้ว" AND the player is NOT in a confirmed court
+    // การอยู่ในสถานะ Pending จะถือว่าเป็นสถานะรอ และเวลาก็จะยังเดินต่อ
     if (m.status === 'มาแล้ว' && !inCourtIds.has(m.id)) {
       // 1. เวลาหายไปทันที: หากเข้าเงื่อนไข แต่ waitStartTime เป็น null ให้เริ่มจับใหม่
       if(!m.waitStartTime) m.waitStartTime = Date.now();
@@ -416,7 +1113,7 @@ function updateWaitTimes() {
     } else {
       // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ players ทันที (หรือสถานะยังไม่มา)
       m.waitStartTime = null; 
-      waitTimeEl.textContent = '-';
+      waitTimeEl.textContent = '-'; // แสดงเป็นขีดแทน 00:00 // แก้ให้แสดง 00:00 เมื่อไม่ได้จับเวลา
     }
   }
 }
@@ -427,12 +1124,13 @@ function renderMembers(){
   membersTbody.innerHTML = '';
   memberRows.clear(); 
   if(members.length === 0){
-    membersTbody.innerHTML = '<tr><td colspan="16" style="padding:18px;text-align:center;color:var(--text-muted)">ยังไม่มีสมาชิก — เพิ่มสมาชิกเพื่อเริ่มใช้งาน</td></tr>';
+    membersTbody.innerHTML = '<tr><td colspan="8" style="padding:18px;text-align:center;color:var(--text-muted)">ยังไม่มีสมาชิก — เพิ่มสมาชิกเพื่อเริ่มใช้งาน</td></tr>'; // Total 17 columns
     return;
   }
 
   members.forEach((m, idx) => {
-    m.plays = m.plays || Array(9).fill(false);
+    // **MODIFIED: Initialize gamesPlayed and ensure shuttlecocksUsed is present**
+    if(m.gamesPlayed === undefined) m.gamesPlayed = 0; 
     if(!m.status) m.status = 'ยังไม่มา';
     if(m.shuttlecocksUsed === undefined) m.shuttlecocksUsed = 0;
     
@@ -440,9 +1138,6 @@ function renderMembers(){
     tr.dataset.memberId = m.id;
     memberRows.set(m.id, tr);
 
-    // ลำดับ, ชื่อ, ระดับมือ (Code unchanged for brevity, uses new CSS variables)
-    // ... [Code for index, name input, skill select] ...
-    
     // ลำดับ
     const tdIdx = document.createElement('td');
     tdIdx.textContent = idx + 1;
@@ -481,7 +1176,7 @@ function renderMembers(){
     // เวลาที่รอ
     const tdWaitTime = document.createElement('td');
     tdWaitTime.className = 'wait-time';
-    tdWaitTime.textContent = '-';
+    tdWaitTime.textContent = '00:00'; // Default display
     tr.appendChild(tdWaitTime);
 
     // สถานะ
@@ -520,8 +1215,29 @@ function renderMembers(){
     tdStatus.appendChild(selStatus);
     tr.appendChild(tdStatus);
 
+    // *** MODIFIED: จำนวนลงสนาม (Game Count) ***
+    
+    const tdPlayCount = document.createElement('td');
+    tdPlayCount.className = 'play-count';
+    const playInput = document.createElement('input');
+    playInput.type = 'number';
+    playInput.min = '0';
+    playInput.step = '1';
+    playInput.value = Math.round(m.gamesPlayed || 0);
+    playInput.style.width = '60px';
+    playInput.onchange = () => {
+      const val = parseInt(playInput.value) || 0;
+      m.gamesPlayed = Math.max(0, val);
+      playInput.value = m.gamesPlayed; // Update value to clean up
+      saveAll();
+      renderPaymentSection();
+    };
+    tdPlayCount.appendChild(playInput);
+    tr.appendChild(tdPlayCount);
+
+    // *** END MODIFIED COLUMN ***
+
     // ลูกที่ใช้ (Code unchanged for brevity, uses new CSS variables)
-    // ... [Code for shuttlecock input] ...
     const tdShuttlecock = document.createElement('td');
     const scInput = document.createElement('input');
     scInput.type = 'number';
@@ -539,24 +1255,6 @@ function renderMembers(){
     tdShuttlecock.appendChild(scInput);
     tr.appendChild(tdShuttlecock);
     
-    // plays 1-9 (Code unchanged for brevity)
-    // ... [Code for plays checkboxes] ...
-    for(let i = 0; i < 9; i++){
-      const td = document.createElement('td');
-      td.className = 'play';
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.checked = !!m.plays[i];
-      chk.onchange = () => { 
-        m.plays[i] = chk.checked; 
-        saveAll(); 
-        renderPaymentSection();
-      };
-      td.appendChild(chk);
-      tr.appendChild(td);
-    }
-
-
     // จัดการ
     const tdManage = document.createElement('td');
     const btnDel = document.createElement('button');
@@ -633,6 +1331,7 @@ function renderCourtElement(court) {
   };
   // ... [End of Drag & Drop logic] ...
 
+  // MODIFIED: top container now only holds title and the main controls container
   const top = document.createElement('div'); top.style.display='flex'; top.style.justifyContent='space-between'; top.style.alignItems='center';
   
   // Editable Court Name
@@ -657,23 +1356,21 @@ function renderCourtElement(court) {
     }
   };
   
-  // Refactor controls section
-  const controls = document.createElement('div');
-  controls.style.display = 'flex'; 
-  controls.style.gap = '6px';
+  // Refactor controls section (Added a wrapper for media query control)
+  const controlsWrapper = document.createElement('div');
+  controlsWrapper.className = 'controls-container'; // Class for media query
   
   // 1. Shuttlecock Controls Group 
   const shuttlecockGroup = document.createElement('div');
-  shuttlecockGroup.style.display = 'flex';
-  shuttlecockGroup.style.alignItems = 'center';
-  shuttlecockGroup.style.gap = '4px';
-
+  shuttlecockGroup.className = 'shuttlecock-group'; // Class for media query
+  
   const scDisplay = document.createElement('span'); 
   scDisplay.textContent = court.shuttlecocksCount;
   scDisplay.style.marginRight = '8px';
   scDisplay.style.fontWeight = 'bold';
   scDisplay.style.fontSize = '16px';
   scDisplay.style.color = 'var(--warning)'; // Use warning color for counter
+  scDisplay.className = 'shuttlecock-display'; // Class for media query
 
   const btnShuttlecock = document.createElement('button');
   btnShuttlecock.textContent = 'ขอลูกเพิ่ม';
@@ -694,6 +1391,7 @@ function renderCourtElement(court) {
         court.players.forEach(pid => {
             const m = members.find(x => x.id === pid);
             if (m) {
+                // NOTE: This logic for shuttlecock cost allocation is correct for the original implementation
                 m.shuttlecocksUsed = Math.round((m.shuttlecocksUsed || 0) + usagePerPlayer); 
             }
         });
@@ -708,17 +1406,22 @@ function renderCourtElement(court) {
 
   shuttlecockGroup.appendChild(scDisplay);
   shuttlecockGroup.appendChild(btnShuttlecock);
-  controls.appendChild(shuttlecockGroup);
+  controlsWrapper.appendChild(shuttlecockGroup);
   
-  // 2. Arrangement Buttons 
-  const btnArrange = document.createElement('button'); 
-  btnArrange.textContent='สุ่ม'; 
-  btnArrange.onclick = ()=> arrangeForCourt(court.id);
+  // 2. Arrangement Buttons Group
+  const actionButtons = document.createElement('div');
+  actionButtons.className = 'action-buttons'; // Class for media query
+  actionButtons.style.display = 'flex'; // Ensure flex layout
+  actionButtons.style.gap = '4px'; // Reduce gap
   
   const btnManual = document.createElement('button');
   btnManual.textContent = 'จัดเอง';
   btnManual.style.backgroundColor = 'var(--success)'; 
   btnManual.onclick = () => manualAssign(court.id);
+  
+  const btnArrange = document.createElement('button'); 
+  btnArrange.textContent='สุ่ม'; 
+  btnArrange.onclick = ()=> arrangeForCourt(court.id);
   
   const btnEmpty = document.createElement('button'); 
   btnEmpty.textContent='ว่าง'; 
@@ -726,7 +1429,7 @@ function renderCourtElement(court) {
   btnEmpty.onclick = ()=>{
     if(!confirm('จะเคลียร์ผู้เล่นในสนามนี้ออกใช่หรือไม่?')) return;
     
-    // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่ออกจากสนาม Players ทันที ***
+    // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่ออกจากสนาม Players ทันที (เริ่มจับเวลาใหม่) ***
     const oldPlayersIds = court.players || [];
     oldPlayersIds.forEach(pid => {
       const m = members.find(x => x.id === pid);
@@ -741,11 +1444,11 @@ function renderCourtElement(court) {
   const btnRemove = document.createElement('button'); 
   btnRemove.textContent='ลบ'; 
   btnRemove.className='red'; 
-  btnRemove.style.marginLeft='6px';
+  btnRemove.style.marginLeft='0'; // Remove inline margin
   btnRemove.onclick = ()=>{ 
     if(!confirm('ลบสนามนี้?')) return; 
     
-    // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่อยู่ในสนาม Players ที่กำลังจะถูกลบ ทันที ***
+    // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่อยู่ในสนาม Players ที่กำลังจะถูกลบ ทันที (เริ่มจับเวลาใหม่) ***
     const oldPlayersIds = court.players || [];
     oldPlayersIds.forEach(pid => {
       const m = members.find(x => x.id === pid);
@@ -758,12 +1461,14 @@ function renderCourtElement(court) {
     renderAll(); 
   };
   
-  controls.appendChild(btnManual);
-  controls.appendChild(btnArrange);
-  controls.appendChild(btnEmpty); 
-  controls.appendChild(btnRemove);
+  actionButtons.appendChild(btnManual);
+  actionButtons.appendChild(btnArrange);
+  actionButtons.appendChild(btnEmpty); 
+  actionButtons.appendChild(btnRemove);
+  controlsWrapper.appendChild(actionButtons);
   
-  top.appendChild(titleInput); top.appendChild(controls); 
+  top.appendChild(titleInput); 
+  top.appendChild(controlsWrapper); // Append the wrapper
   el.appendChild(top);
 
   // ... [Remaining Court rendering logic for players/pending unchanged, uses new CSS variables] ...
@@ -797,13 +1502,13 @@ function renderCourtElement(court) {
     const btnRow = document.createElement('div'); btnRow.style.marginTop='10px'; btnRow.style.display='flex'; btnRow.style.gap='8px';
     const ok = document.createElement('button'); ok.textContent='ตกลง'; ok.onclick = ()=> confirmArrangement(court.id);
     const cancel = document.createElement('button'); cancel.textContent='ยกเลิก'; cancel.className='gray'; cancel.onclick = ()=> { 
-      // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่ถูกจัดลง Pending ทันทีที่ยกเลิก ***
-      const oldPendingIds = court.pending.teams.flat();
-      oldPendingIds.forEach(pid => {
-        const m = members.find(x => x.id === pid);
-        // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
-        if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
-      });
+      // *** MODIFICATION: ตามคำขอของผู้ใช้: ห้ามรีเซ็ตเวลาเมื่อกดยกเลิก Pending (เวลาจะเดินต่อ/ค้างอยู่ตามเดิม) ***
+      // const oldPendingIds = court.pending.teams.flat();
+      // oldPendingIds.forEach(pid => {
+      //   const m = members.find(x => x.id === pid);
+      //   // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
+      //   if(m && m.status === 'มาแล้ว') m.waitStartTime = Date.now(); 
+      // });
       
       court.pending = null; saveAll(); renderAll(); 
     };
@@ -837,59 +1542,87 @@ function renderCourts(){
 }
 
 // ... [renderHistory, filterHistory, Helpers logic unchanged] ...
+
 function renderHistory(){
+  historyList.innerHTML = '';
   if(matchHistory.length === 0){
-    sortedHistoryRows = [];
-    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>'; return;
+    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>';
+    return;
   }
-  const map = {};
-  matchHistory.forEach(item => {
-    const key = pairKey(item.a,item.b);
-    map[key] = map[key] || {a:item.a,b:item.b,count:0,last:item.t};
-    map[key].count += 1;
-    if(item.t > map[key].last) map[key].last = item.t;
-  });
-  sortedHistoryRows = Object.values(map).sort((x,y)=>y.last - x.last);
-  filterHistory(); 
+  filterHistory();
 }
 
-function filterHistory() {
-    const searchTerm = document.getElementById('inputHistorySearch').value.toLowerCase().trim();
-    historyList.innerHTML = '';
 
-    if (sortedHistoryRows.length === 0) {
-        historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>';
-        return;
-    }
+function filterHistory(){
+  const searchTerm = document.getElementById('inputHistorySearch').value.toLowerCase().trim();
+  historyList.innerHTML = '';
 
-    const filteredRows = sortedHistoryRows.filter(r => {
-        if (!searchTerm) return true;
-        const nameA = getMemberName(r.a).toLowerCase();
-        const nameB = getMemberName(r.b).toLowerCase();
-        return nameA.includes(searchTerm) || nameB.includes(searchTerm);
-    });
-    
-    if (filteredRows.length === 0) {
-        historyList.innerHTML = '<div class="muted small">ไม่พบประวัติการจับคู่สำหรับชื่อที่ค้นหา</div>';
-        return;
-    }
+  if(matchHistory.length === 0){
+    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติ</div>';
+    return;
+  }
 
-    filteredRows.forEach(r => {
-        const div = document.createElement('div'); 
-        div.style.padding='6px 0'; 
-        div.style.borderBottom='1px dashed var(--divider)';
-        
-        const nameLine = document.createElement('div'); 
-        nameLine.innerHTML = `<strong>${escapeHtml(getMemberName(r.a))}</strong> — <strong>${escapeHtml(getMemberName(r.b))}</strong>`;
-        
-        const meta = document.createElement('div'); 
-        meta.className='muted small'; 
-        meta.textContent = `จำนวนครั้ง: ${r.count} · ล่าสุด: ${new Date(r.last).toLocaleString()}`;
-        
-        div.appendChild(nameLine); 
-        div.appendChild(meta); 
-        historyList.appendChild(div);
-    });
+  // 🔑 GROUP rows by timestamp (1 game = 1 time)
+  const grouped = {};
+  matchHistory.forEach(r=>{
+    if(!grouped[r.t]) grouped[r.t] = [];
+    grouped[r.t].push(r);
+  });
+
+  const games = Object.values(grouped).filter(group=>{
+    if(!searchTerm) return true;
+    return group.some(r =>
+      getMemberName(r.a).toLowerCase().includes(searchTerm) ||
+      getMemberName(r.b).toLowerCase().includes(searchTerm)
+    );
+  });
+
+  if(games.length === 0){
+    historyList.innerHTML = '<div class="muted small">ไม่พบประวัติ</div>';
+    return;
+  }
+
+  games.slice().reverse().forEach(group=>{
+    // Expect 2 rows per game (A+B vs C+D)
+    const p1 = group[0];
+    const p2 = group[1];
+
+    const wrap = document.createElement('div');
+    wrap.className = 'history-game-card';
+
+    wrap.innerHTML = `
+      <div class="history-game-grid">
+        <div class="history-team">
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p1.a))}</strong>
+            <div class="level">${getMemberSkill(p1.a)}</div>
+          </div>
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p1.b))}</strong>
+            <div class="level">${getMemberSkill(p1.b)}</div>
+          </div>
+        </div>
+
+        <div class="history-game-vs">VS</div>
+
+        <div class="history-team">
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p2.a))}</strong>
+            <div class="level">${getMemberSkill(p2.a)}</div>
+          </div>
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p2.b))}</strong>
+            <div class="level">${getMemberSkill(p2.b)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="history-game-time">
+        ${new Date(p1.t).toLocaleString()}
+      </div>
+    `;
+
+    historyList.appendChild(wrap);
+  });
 }
 function getMemberName(id){ const m = members.find(x=>x.id===id); return m ? m.name : '(หายไป)'; }
 function getMemberSkill(id){ const m = members.find(x=>x.id===id); return m ? m.skill : ''; }
@@ -897,10 +1630,11 @@ function pairKey(a,b){ return a < b ? `${a}|${b}` : `${b}|${a}`; }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
 /* End of Helpers */
 
-/* Arrange logic (unchanged) */
+/* Arrange logic (MODIFIED: Uses 'gamesPlayed' instead of 'plays' array length) */
 function tryMakeMatch(avail){
   if(avail.length < 4) return null;
-  avail.forEach(a => a.playCount = (a.plays || []).filter(Boolean).length);
+  // **MODIFIED: Use gamesPlayed for sorting**
+  avail.forEach(a => a.playCount = a.gamesPlayed || 0); 
   const groups = {};
   avail.forEach(a => { groups[a.playCount] = groups[a.playCount] || []; groups[a.playCount].push(a); });
   const pcs = Object.keys(groups).map(Number).sort((a,b)=>a-b);
@@ -965,7 +1699,7 @@ function arrangeForCourt(courtId){
   }
 }
 
-/* Confirm arrangement: commit players -> update plays & history */
+/* Confirm arrangement: commit players -> update plays (now gamesPlayed) & history (MODIFIED) */
 function confirmArrangement(courtId){
   const court = courts.find(c=>c.id===courtId);
   if(!court || !court.pending) return;
@@ -974,10 +1708,10 @@ function confirmArrangement(courtId){
   ids.forEach(id=>{
     const m = members.find(x => x.id === id);
     if(m){
-      m.plays = m.plays || Array(9).fill(false);
-      const idx = m.plays.findIndex(v=>v===false);
-      if(idx >= 0) m.plays[idx] = true;
-      // 1. เวลาหายไปทันที: เมื่อผู้เล่นอยู่ในสถานะ "players" อย่างเดียว
+      // **MODIFIED: Increment gamesPlayed instead of manipulating 'plays' array**
+      m.gamesPlayed = (m.gamesPlayed || 0) + 1;
+      
+      // 1. เวลาหายไปทันที: เมื่อผู้เล่นอยู่ในสถานะ "players" อย่างเดียว (หยุดจับเวลา)
       m.waitStartTime = null; 
     }
   });
@@ -1039,7 +1773,8 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
   candidates.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.id;
-    const statusText = c.status === 'มาแล้ว' ? `รอ ${c.waitStartTime ? formatTime(Math.floor((Date.now() - c.waitStartTime) / 1000)) : '00:00:00'}` : 'ยังไม่มา';
+    // ใช้ formatTime ใหม่ (MM:SS) และแก้ default เป็น 00:00
+    const statusText = c.status === 'มาแล้ว' ? `รอ ${c.waitStartTime ? formatTime(Math.floor((Date.now() - c.waitStartTime) / 1000)) : '00:00'}` : 'ยังไม่มา';
     opt.textContent = `${c.name} (${c.skill} | ${statusText})`;
     if (c.id === currentId) {
       opt.selected = true;
@@ -1064,23 +1799,22 @@ function openReplaceDialog(courtId, teamIndex, memberIndex){
     const chosenId = select.value;
     const oldId = court.pending.teams[teamIndex][memberIndex];
     
-    // *** MODIFICATION: รีเซ็ตเวลาสำหรับผู้เล่นที่ถูกแทนที่ทันที (Rule 2) ***
-    if (oldId !== chosenId) {
-      const oldMember = members.find(m => m.id === oldId); 
+    // *** MODIFICATION: ตามคำขอของผู้ใช้: ห้ามรีเซ็ตเวลาเมื่อถูกแทนที่ออกจากการจัดคู่ pending ***
+    // ผู้เล่นที่ถูกแทนที่ออกไป จะกลับสู่สถานะรอ และเวลาจะเดินต่อ/ค้างไว้ตามเดิม
+    // if (oldId !== chosenId) {
+    //   const oldMember = members.find(m => m.id === oldId); 
       
-      // ผู้เล่นที่ถูกแทนที่ออกไป ให้เริ่มจับเวลา "รอ" ใหม่ หากสถานะเป็น "มาแล้ว" และไม่ได้เข้าสนามที่ยืนยันแล้ว
-      if (oldMember && oldMember.status === 'มาแล้ว') {
-        const isOldPlayerInOtherPending = courts.some(c => c.id !== courtId && (c.pending && c.pending.teams.flat().includes(oldId)));
-        const isOldPlayerInOtherConfirmed = getPlayersInCourtIds().has(oldId);
+    //   if (oldMember && oldMember.status === 'มาแล้ว') {
+    //     const isOldPlayerInOtherPending = courts.some(c => c.id !== courtId && (c.pending && c.pending.teams.flat().includes(oldId)));
+    //     const isOldPlayerInOtherConfirmed = getPlayersInCourtIds().has(oldId);
         
-        if (!isOldPlayerInOtherPending && !isOldPlayerInOtherConfirmed) {
-            oldMember.waitStartTime = Date.now();
-        } else {
-            // ถ้าไปอยู่ pending/players อื่น ให้เวลาหายไป
-            oldMember.waitStartTime = null;
-        }
-      }
-    }
+    //     if (!isOldPlayerInOtherPending && !isOldPlayerInOtherConfirmed) {
+    //         oldMember.waitStartTime = Date.now();
+    //     } else {
+    //         oldMember.waitStartTime = null;
+    //     }
+    //   }
+    // }
     
     court.pending.teams[teamIndex][memberIndex] = chosenId;
     saveAll();
@@ -1139,7 +1873,7 @@ function manualAssign(courtId){
       const optionsHtml = avail.filter(m => !chosenIds.has(m.id) || m.id === selectedValue)
                                .map(m => {
                                   // เวลาที่แสดงคือเวลา "รอ" จริง
-                                  const statusText = m.status === 'มาแล้ว' ? `รอ ${m.waitStartTime ? formatTime(Math.floor((Date.now() - m.waitStartTime) / 1000)) : '00:00:00'}` : 'ยังไม่มา';
+                                  const statusText = m.status === 'มาแล้ว' ? `รอ ${m.waitStartTime ? formatTime(Math.floor((Date.now() - m.waitStartTime) / 1000)) : '00:00'}` : 'ยังไม่มา';
                                   return `<option value="${m.id}" ${m.id === selectedValue ? 'selected' : ''}>${m.name} (${m.skill} | ${statusText})</option>`;
                                }).join('');
       sel.innerHTML = optionsHtml;
@@ -1189,15 +1923,15 @@ function manualAssign(courtId){
     const chosen = selects.map(s=>s.value);
     if(new Set(chosen).size < 4){ alert('ห้ามเลือกชื่อซ้ำ'); return; }
 
-    // *** MODIFICATION: จัดการเวลาของผู้เล่นที่อยู่ใน pending เดิมแล้วถูกเอาออก (Rule 2) ***
-    const oldPendingIds = court.pending ? court.pending.teams.flat() : [];
+    // *** MODIFICATION: ตามคำขอของผู้ใช้: ห้ามรีเซ็ตเวลาของผู้เล่นที่ออกจาก pending เดิม (เพราะเวลาจะเดินต่อเอง) ***
+    // const oldPendingIds = court.pending ? court.pending.teams.flat() : [];
     
     // ผู้เล่นที่อยู่ใน pending เดิม และไม่ได้ถูกเลือกเข้ามาใน pending ใหม่ ให้เริ่มจับเวลา "รอ"
-    oldPendingIds.filter(pid => !chosen.includes(pid)).forEach(pid => {
-      const m = members.find(x => x.id === pid);
-      // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
-      if (m && m.status === 'มาแล้ว' && !inCourtIds.has(pid)) m.waitStartTime = Date.now();
-    });
+    // oldPendingIds.filter(pid => !chosen.includes(pid)).forEach(pid => {
+    //   const m = members.find(x => x.id === pid);
+    //   // 2. รีเซ็ตเวลาเริ่มใหม่: เมื่อผู้เล่นออกจากสถานะ pending (ซึ่งถือเป็นสถานะว่าง)
+    //   if (m && m.status === 'มาแล้ว' && !inCourtIds.has(pid)) m.waitStartTime = Date.now();
+    // });
     
     court.pending = { teams: [[chosen[0], chosen[1]], [chosen[2], chosen[3]]] };
 
@@ -1237,7 +1971,7 @@ function exportCSV(){
   const a = document.createElement('a'); a.href = url; a.download = 'pair_history.csv'; a.click(); URL.revokeObjectURL(url);
 }
 
-// ... [Payment calculation and rendering logic (unchanged, uses new CSS variables)] ...
+// ... [Payment calculation and rendering logic (MODIFIED: Use gamesPlayed instead of plays.length)] ...
 function calculateEqualShare() {
   const data = calcData.equal;
   const presentMembers = getPresentMembers();
@@ -1294,7 +2028,8 @@ function calculatePerShuttlecockShare() {
   const totalShuttlecocksUsed = presentMembers.reduce((sum, m) => sum + (Math.round(m.shuttlecocksUsed || 0)), 0);
 
   const results = presentMembers.map(m => {
-    const numPlays = (m.plays || []).filter(Boolean).length;
+    // **MODIFIED: Use gamesPlayed**
+    const numPlays = Math.round(m.gamesPlayed || 0);
     const numShuttlecocks = Math.round(m.shuttlecocksUsed || 0);
     const memberShuttlecockExpense = numShuttlecocks * shuttlecockCost;
     const totalMemberExpense = courtCost + memberShuttlecockExpense;
@@ -1418,12 +2153,13 @@ function renderAll(){
   renderPaymentSection();
 }
 
-/* Buttons wiring */
+/* Buttons wiring (MODIFIED: Initial member data) */
 document.getElementById('btnAdd').onclick = ()=>{
   const nameEl = document.getElementById('inputName'); const skillEl = document.getElementById('inputSkill');
   const name = (nameEl.value || '').trim(); const skill = skillEl.value;
   if(!name) return alert('กรุณากรอกชื่อ');
-  members.push({ id: uid(), name, skill, plays: Array(9).fill(false), status: 'ยังไม่มา', shuttlecocksUsed: 0 });
+  // **MODIFIED: Initialize with gamesPlayed: 0**
+  members.push({ id: uid(), name, skill, gamesPlayed: 0, status: 'ยังไม่มา', shuttlecocksUsed: 0 }); 
   nameEl.value = ''; skillEl.value = 'กลาง';
   saveAll(); renderAll();
 };
@@ -1456,6 +2192,71 @@ window.filterHistory = filterHistory;
 window.toggleTheme = toggleTheme; // Expose for accessibility/manual testing
 
 </script>
+
+<!-- ICON BOTTOM TAB BAR -->
+<nav class="icon-tab-bar">
+  <a href="#membersCard" class="tab-item">
+    <span class="icon">👥</span>
+    <span class="label">สมาชิก</span>
+  </a>
+  <a href="#courtsGrid" class="tab-item">
+    <span class="icon">🏸</span>
+    <span class="label">สนาม</span>
+  </a>
+  <a href="#historyList" class="tab-item">
+    <span class="icon">📜</span>
+    <span class="label">ประวัติ</span>
+  </a>
+  <a href="#paymentCard" class="tab-item">
+    <span class="icon">💰</span>
+    <span class="label">คิดเงิน</span>
+  </a>
+</nav>
+
+<style>
+.icon-tab-bar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  background: var(--card);
+  border-top: 1px solid var(--divider);
+  padding: 6px 0 8px;
+  z-index: 9999;
+}
+
+.icon-tab-bar .tab-item{
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.icon-tab-bar .icon{
+  display: block;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.icon-tab-bar .label{
+  display: block;
+  margin-top: 2px;
+}
+
+/* Active feel on tap */
+.icon-tab-bar .tab-item:active{
+  color: var(--accent);
+}
+
+/* Make room for bar */
+body{
+  padding-bottom: 90px !important;
+}
+</style>
+
 </body>
 <div style="text-align:center; margin: 20px 0;">
   <p style="margin-bottom:10px; font-weight:bold; color:var(--text-primary);">
