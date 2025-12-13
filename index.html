@@ -651,6 +651,61 @@
   #membersTable td:nth-child(8){ width:60px !important; }
 }
 
+
+/* ===== เพิ่มระยะห่างระหว่างแถว (ตารางสมาชิก) ===== */
+
+/* ใช้ border-spacing เพื่อเว้นช่องไฟแนวตั้งระหว่างแถว */
+#membersTable{
+  border-collapse: separate !important;
+  border-spacing: 0 8px;   /* แนวนอน | แนวตั้ง */
+}
+
+/* ทำให้แถวลอยสวย ไม่ติดเส้น */
+#membersTable tbody tr{
+  background: transparent;
+}
+
+/* เพิ่มพื้นที่บน-ล่างใน cell นิดหน่อย ให้สบายตา */
+#membersTable th,
+#membersTable td{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* มือถือ: ลดช่องไฟลงเล็กน้อย */
+@media (max-width: 640px){
+  #membersTable{
+    border-spacing: 0 6px;
+  }
+  #membersTable th,
+  #membersTable td{
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+
+/* ===== Mobile: make skill icon input fit icon only ===== */
+@media (max-width: 640px){
+  /* คอลัมน์ระดับมือ */
+  #membersTable th:nth-child(3),
+  #membersTable td:nth-child(3){
+    width: 48px !important;
+    text-align: center;
+  }
+
+  /* select / input ระดับมือ ให้พอดีกับไอคอน */
+  #membersTable td:nth-child(3) select,
+  #membersTable td:nth-child(3) input{
+    width: 36px !important;
+    min-width: 36px !important;
+    padding: 2px !important;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+  }
+}
+
 </style>
 
 <style id="anchor-scroll-fix">
