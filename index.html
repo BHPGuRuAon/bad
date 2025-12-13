@@ -461,6 +461,27 @@
 }
 </style>
 
+
+<style id="history-scroll-fix-strong">
+/* Stronger offset specifically for History */
+#historyList {
+  scroll-margin-top: 140px !important;
+}
+
+/* If the real heading is just before historyList, offset it too */
+#historyList h3,
+#historyList h2 {
+  scroll-margin-top: 140px !important;
+}
+
+/* Mobile tweak */
+@media (max-width: 768px){
+  #historyList {
+    scroll-margin-top: 160px !important;
+  }
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
