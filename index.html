@@ -440,100 +440,8 @@
   }
 
 </style>
-
-<style id="floating-tabs-style">
-.bottom-tabs{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:space-around;
-  gap:6px;
-  background:#0f172a;
-  padding:8px 6px;
-  z-index:10000;
-  border-top:1px solid #334155;
-}
-.bottom-tabs button{
-  flex:1;
-  border:none;
-  background:#1e293b;
-  color:#e5e7eb;
-  padding:10px 4px;
-  border-radius:10px;
-  font-size:12px;
-}
-.bottom-tabs button.active{
-  background:#22c55e;
-  color:#022c22;
-}
-.tab-section{display:none}
-.tab-section.active{display:block}
-</style>
-
-
-<style id="desktop-2col-courts">
-/* ✅ Desktop only: 2 columns and bigger court cards */
-@media (min-width: 1024px){
-  #courtsGrid{
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* 4 -> 2 */
-    gap: 20px !important;                              /* bigger spacing */
-    margin-top: 14px;
-  }
-
-  .court{
-    padding: 20px !important;        /* bigger card */
-    font-size: 16px !important;
-  }
-
-  .court h3{
-    font-size: 18px !important;      /* bigger title */
-  }
-
-  .court button{
-    padding: 10px 14px !important;  /* bigger buttons */
-    font-size: 14px !important;
-  }
-}
-</style>
-
-
-<style id="member-spacing-fix">
-/* ✅ Spacing for member list (desktop & mobile) */
-#membersCard table tbody tr{
-  border-bottom: 12px solid transparent; /* vertical spacing between rows */
-}
-
-#membersCard table tbody td{
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-}
-
-/* Extra spacing on desktop for clarity */
-@media (min-width: 1024px){
-  #membersCard table tbody tr{
-    border-bottom: 16px solid transparent;
-  }
-
-  #membersCard table tbody td{
-    padding-top: 14px !important;
-    padding-bottom: 14px !important;
-  }
-}
-</style>
-
 </head>
-<body data-theme="dark">
-
-<div class="bottom-tabs">
-  <button class="active" onclick="showTab('membersTab',this)">สมาชิก</button>
-  <button onclick="showTab('courtsTab',this)">สนาม</button>
-  <button onclick="showTab('historyTab',this)">ประวัติ</button>
-  <button onclick="showTab('paymentTab',this)">คิดเงิน</button>
-</div>
- <div class="wrap">
+<body data-theme="dark"> <div class="wrap">
     <header>
       <h1>ระบบจัดก๊วนตีแบด</h1>
       <div class="row">
@@ -544,7 +452,7 @@
       </div>
     </header>
 
-    <div id="membersTab" class="tab-section active"><section class="card" id="membersCard">
+    <section class="card" id="membersCard">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div>
           <strong>ตารางสมาชิก</strong><div class="muted small">คลิกแก้ชื่อหรือระดับมือได้ตลอด</div>
@@ -580,9 +488,9 @@
           <tbody id="membersTbody"></tbody>
         </table>
       </div>
-    </section></div>
+    </section>
 
-    <div id="courtsTab" class="tab-section"><section class="card">
+    <section class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div>
           <strong>สนาม</strong><div class="muted small">เพิ่มสนามได้หลายสนาม</div>
@@ -594,9 +502,9 @@
       </div>
 
       <div class="grid" id="courtsGrid"></div>
-    </section></div>
+    </section>
 
-    <div id="historyTab" class="tab-section"><section class="card">
+    <section class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div>
           <strong>ประวัติการจับคู่ (ใครเคยคู่กับใคร)</strong>
@@ -611,9 +519,9 @@
       </div>
 
       <div class="history-list history-scroll" id="historyList"></div>
-    </section></div>
+    </section>
 
-    <div id="paymentTab" class="tab-section"><section class="card" id="paymentCard">
+    <section class="card" id="paymentCard">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
             <div>
                 <strong>รายจ่าย</strong>
@@ -626,7 +534,7 @@
         </div>
         <div id="paymentModeContent" style="margin-top: 12px;">
             </div>
-    </section></div>
+    </section>
     <footer style="margin-top:8px;color:var(--text-muted);font-size:13px">หมายเหตุ: ระบบพยายามเลือกผู้เล่นที่เล่นน้อยสุดก่อน และหลีกเลี่ยงการจับคู่ซ้ำ หากหาไม่ได้จะแจ้งให้ทราบ</footer>
   </div>
 
@@ -1831,14 +1739,69 @@ window.toggleTheme = toggleTheme; // Expose for accessibility/manual testing
 
 </script>
 
-<script>
-function showTab(id,btn){
-  document.querySelectorAll('.tab-section').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.floating-tabs button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+<!-- ICON BOTTOM TAB BAR -->
+<nav class="icon-tab-bar">
+  <a href="#membersCard" class="tab-item">
+    <span class="icon">👥</span>
+    <span class="label">สมาชิก</span>
+  </a>
+  <a href="#courtsGrid" class="tab-item">
+    <span class="icon">🏸</span>
+    <span class="label">สนาม</span>
+  </a>
+  <a href="#historyList" class="tab-item">
+    <span class="icon">📜</span>
+    <span class="label">ประวัติ</span>
+  </a>
+  <a href="#paymentCard" class="tab-item">
+    <span class="icon">💰</span>
+    <span class="label">คิดเงิน</span>
+  </a>
+</nav>
+
+<style>
+.icon-tab-bar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  background: var(--card);
+  border-top: 1px solid var(--divider);
+  padding: 6px 0 8px;
+  z-index: 9999;
 }
-</script>
+
+.icon-tab-bar .tab-item{
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.icon-tab-bar .icon{
+  display: block;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.icon-tab-bar .label{
+  display: block;
+  margin-top: 2px;
+}
+
+/* Active feel on tap */
+.icon-tab-bar .tab-item:active{
+  color: var(--accent);
+}
+
+/* Make room for bar */
+body{
+  padding-bottom: 90px !important;
+}
+</style>
 
 </body>
 <div style="text-align:center; margin: 20px 0;">
