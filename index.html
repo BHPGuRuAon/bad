@@ -94,7 +94,7 @@
       vertical-align:middle
   } 
   th.play, td.play{width:34px;text-align:center}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px}
+  
   .court{
       padding:12px;
       border-radius:10px;
@@ -840,6 +840,29 @@
   margin-top: 12px;
   font-size: 12px;
   opacity: .6;
+}
+</style>
+
+
+<style id="court-grid-final">
+/* ===== COURT GRID FINAL FIX ===== */
+
+/* Desktop / Laptop */
+@media (min-width: 769px){
+  .grid#courtsGrid{
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px){
+  .grid#courtsGrid{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
 }
 </style>
 
