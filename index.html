@@ -539,6 +539,71 @@
   }
 }
 
+
+/* ===== Members table spacing tidy ===== */
+#membersTable {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#membersTable th,
+#membersTable td {
+  padding: 6px 6px;        /* balanced spacing */
+  vertical-align: middle;
+}
+
+/* Inputs/selects inside members table */
+#membersTable input,
+#membersTable select,
+#membersTable button {
+  margin: 0;
+}
+
+/* Desktop */
+@media (min-width: 641px){
+  #membersTable th,
+  #membersTable td {
+    padding: 6px 8px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px){
+  #membersTable th,
+  #membersTable td {
+    padding: 4px 4px;      /* tighter but readable */
+  }
+}
+
+
+/* ===== Center skill column between Name and Status ===== */
+
+/* header + cell align center for skill column (col 3) */
+#membersTable th:nth-child(3),
+#membersTable td:nth-child(3) {
+  text-align: center;
+}
+
+/* make select itself centered */
+#membersTable td:nth-child(3) select {
+  margin: 0 auto;
+  display: block;
+}
+
+
+/* ===== Align Management column to the right ===== */
+
+/* จัดการ = คอลัมน์สุดท้าย */
+#membersTable th:last-child,
+#membersTable td:last-child {
+  text-align: right;
+}
+
+/* ปุ่มในคอลัมน์จัดการ ชิดขวา */
+#membersTable td:last-child button {
+  margin-left: 6px;
+}
+
 </style>
 
 <style id="anchor-scroll-fix">
