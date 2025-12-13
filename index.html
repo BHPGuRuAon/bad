@@ -440,6 +440,27 @@
   }
 
 </style>
+
+<style id="anchor-scroll-fix">
+/* Fix anchor overscroll so section titles are visible */
+#membersCard,
+#courtsGrid,
+#historyList,
+#paymentCard {
+  scroll-margin-top: 80px; /* offset for fixed bottom tab bar / header spacing */
+}
+
+/* Extra safety for mobile */
+@media (max-width: 768px){
+  #membersCard,
+  #courtsGrid,
+  #historyList,
+  #paymentCard {
+    scroll-margin-top: 96px;
+  }
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
