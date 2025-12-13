@@ -588,6 +588,34 @@
 }
 </style>
 
+
+<style id="history-2v2-equal-spacing">
+/* Equal spacing for 2v2 history cards */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr; /* left | VS | right = equal sides */
+  gap: 0;
+  align-items: center;
+}
+
+.history-team{
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two players equal width */
+  column-gap: 16px;
+}
+
+.history-game-vs{
+  text-align: center;
+  font-weight: 700;
+  opacity: .7;
+}
+
+.history-game-time{
+  margin-top: 10px;
+  text-align: center;
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
