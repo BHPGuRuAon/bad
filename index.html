@@ -1183,24 +1183,29 @@ function renderMembers(){
     tdName.appendChild(nameInput);
     tr.appendChild(tdName);
 
-    // ระดับมือ (แสดงเป็นไอคอน)
+    // ระดับมือ (select แสดงเฉพาะไอคอน)
     const tdSkill = document.createElement('td');
-    const icon = document.createElement('span');
-    icon.className = `skill-icon skill-${m.skill}`;
-    icon.textContent = skillToIcon(m.skill);
-    icon.title = m.skill;
+    const selSkill = document.createElement('select');
+    selSkill.style.fontSize = '18px';
+    selSkill.style.textAlign = 'center';
 
-    icon.onclick = () => {
-      const skills = ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'];
-      const idx = skills.indexOf(m.skill);
-      m.skill = skills[(idx + 1) % skills.length];
+    const skills = ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'];
+    skills.forEach(s => {
+      const op = document.createElement('option');
+      op.value = s;
+      op.textContent = skillToIcon(s);
+      if (m.skill === s) op.selected = true;
+      selSkill.appendChild(op);
+    });
+
+    selSkill.onchange = () => {
+      m.skill = selSkill.value;
       saveAll();
-      renderMembers();
       renderCourts();
       renderHistory();
     };
 
-    tdSkill.appendChild(icon);
+    tdSkill.appendChild(selSkill);
     tr.appendChild(tdSkill);
 
 
