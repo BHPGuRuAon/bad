@@ -482,6 +482,112 @@
 }
 </style>
 
+
+<style id="history-container-tall">
+/* Make history section taller so user scrolls less on page */
+#historyList,
+#historySection {
+  min-height: 70vh;          /* tall visible area */
+  max-height: 70vh;          /* lock height */
+  overflow-y: auto;          /* scroll inside history */
+  padding: 16px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+}
+
+/* Desktop: even taller */
+@media (min-width: 1024px){
+  #historyList,
+  #historySection {
+    min-height: 75vh;
+    max-height: 75vh;
+  }
+}
+</style>
+
+
+<style id="history-card-style">
+/* History game card */
+.history-game-card{
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+/* Grid inside card */
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.history-game-left strong,
+.history-game-right strong{
+  font-size: 15px;
+}
+
+.history-game-right{
+  text-align: right;
+}
+
+.history-game-vs{
+  font-weight: bold;
+  opacity: .7;
+}
+
+.history-game-time{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .6;
+}
+</style>
+
+
+<style id="history-2v2-card">
+.history-game-card{
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.history-game-grid{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.history-team{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
+}
+
+.history-player strong{
+  font-size: 14px;
+}
+
+.history-player .level{
+  font-size: 12px;
+  opacity: .65;
+}
+
+.history-game-vs{
+  font-weight: bold;
+  opacity: .7;
+}
+
+.history-game-time{
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: .6;
+  text-align: center;
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
@@ -1158,59 +1264,87 @@ function renderCourts(){
 }
 
 // ... [renderHistory, filterHistory, Helpers logic unchanged] ...
+
 function renderHistory(){
+  historyList.innerHTML = '';
   if(matchHistory.length === 0){
-    sortedHistoryRows = [];
-    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>'; return;
+    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>';
+    return;
   }
-  const map = {};
-  matchHistory.forEach(item => {
-    const key = pairKey(item.a,item.b);
-    map[key] = map[key] || {a:item.a,b:item.b,count:0,last:item.t};
-    map[key].count += 1;
-    if(item.t > map[key].last) map[key].last = item.t;
-  });
-  sortedHistoryRows = Object.values(map).sort((x,y)=>y.last - x.last);
-  filterHistory(); 
+  filterHistory();
 }
 
-function filterHistory() {
-    const searchTerm = document.getElementById('inputHistorySearch').value.toLowerCase().trim();
-    historyList.innerHTML = '';
 
-    if (sortedHistoryRows.length === 0) {
-        historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติการจับคู่</div>';
-        return;
-    }
+function filterHistory(){
+  const searchTerm = document.getElementById('inputHistorySearch').value.toLowerCase().trim();
+  historyList.innerHTML = '';
 
-    const filteredRows = sortedHistoryRows.filter(r => {
-        if (!searchTerm) return true;
-        const nameA = getMemberName(r.a).toLowerCase();
-        const nameB = getMemberName(r.b).toLowerCase();
-        return nameA.includes(searchTerm) || nameB.includes(searchTerm);
-    });
-    
-    if (filteredRows.length === 0) {
-        historyList.innerHTML = '<div class="muted small">ไม่พบประวัติการจับคู่สำหรับชื่อที่ค้นหา</div>';
-        return;
-    }
+  if(matchHistory.length === 0){
+    historyList.innerHTML = '<div class="muted small">ยังไม่มีประวัติ</div>';
+    return;
+  }
 
-    filteredRows.forEach(r => {
-        const div = document.createElement('div'); 
-        div.style.padding='6px 0'; 
-        div.style.borderBottom='1px dashed var(--divider)';
-        
-        const nameLine = document.createElement('div'); 
-        nameLine.innerHTML = `<strong>${escapeHtml(getMemberName(r.a))}</strong> — <strong>${escapeHtml(getMemberName(r.b))}</strong>`;
-        
-        const meta = document.createElement('div'); 
-        meta.className='muted small'; 
-        meta.textContent = `จำนวนครั้ง: ${r.count} · ล่าสุด: ${new Date(r.last).toLocaleString()}`;
-        
-        div.appendChild(nameLine); 
-        div.appendChild(meta); 
-        historyList.appendChild(div);
-    });
+  // 🔑 GROUP rows by timestamp (1 game = 1 time)
+  const grouped = {};
+  matchHistory.forEach(r=>{
+    if(!grouped[r.t]) grouped[r.t] = [];
+    grouped[r.t].push(r);
+  });
+
+  const games = Object.values(grouped).filter(group=>{
+    if(!searchTerm) return true;
+    return group.some(r =>
+      getMemberName(r.a).toLowerCase().includes(searchTerm) ||
+      getMemberName(r.b).toLowerCase().includes(searchTerm)
+    );
+  });
+
+  if(games.length === 0){
+    historyList.innerHTML = '<div class="muted small">ไม่พบประวัติ</div>';
+    return;
+  }
+
+  games.slice().reverse().forEach(group=>{
+    // Expect 2 rows per game (A+B vs C+D)
+    const p1 = group[0];
+    const p2 = group[1];
+
+    const wrap = document.createElement('div');
+    wrap.className = 'history-game-card';
+
+    wrap.innerHTML = `
+      <div class="history-game-grid">
+        <div class="history-team">
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p1.a))}</strong>
+            <div class="level">${getMemberSkill(p1.a)}</div>
+          </div>
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p1.b))}</strong>
+            <div class="level">${getMemberSkill(p1.b)}</div>
+          </div>
+        </div>
+
+        <div class="history-game-vs">VS</div>
+
+        <div class="history-team">
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p2.a))}</strong>
+            <div class="level">${getMemberSkill(p2.a)}</div>
+          </div>
+          <div class="history-player">
+            <strong>${escapeHtml(getMemberName(p2.b))}</strong>
+            <div class="level">${getMemberSkill(p2.b)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="history-game-time">
+        ${new Date(p1.t).toLocaleString()}
+      </div>
+    `;
+
+    historyList.appendChild(wrap);
+  });
 }
 function getMemberName(id){ const m = members.find(x=>x.id===id); return m ? m.name : '(หายไป)'; }
 function getMemberSkill(id){ const m = members.find(x=>x.id===id); return m ? m.skill : ''; }
