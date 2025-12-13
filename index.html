@@ -2257,6 +2257,140 @@ body{
 }
 </style>
 
+
+<style id="skill-badge-replace-style">
+.skill-dot{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  font-size:11px;
+  color:#000;
+}
+.skill-with-text{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+</style>
+
+<script id="skill-badge-replace-js">
+const SKILL_MAP = {
+  'เบามาก':   {c:'#6ecbff', i:'🔵'},
+  'เบา':      {c:'#4caf50', i:'🟢'},
+  'กลาง':     {c:'#ffeb3b', i:'🟡'},
+  'กลางหนัก': {c:'#ff9800', i:'🟠'},
+  'หนัก':     {c:'#f44336', i:'🔴'},
+};
+
+function makeDot(skill){
+  const s = SKILL_MAP[skill];
+  if(!s) return null;
+  const span = document.createElement('span');
+  span.className = 'skill-dot';
+  span.style.background = s.c;
+  span.textContent = s.i;
+  span.title = skill;
+  return span;
+}
+
+function replaceSkillText(){
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+  const texts = [];
+  while(walker.nextNode()) texts.push(walker.currentNode);
+
+  texts.forEach(t => {
+    const val = t.nodeValue && t.nodeValue.trim();
+    if(!SKILL_MAP[val]) return;
+
+    const parent = t.parentElement;
+    if(!parent) return;
+
+    // EXCEPTION: add member section (keep text + icon)
+    if(parent.closest('#addMember, .add-member, #memberForm')){
+      if(parent.dataset.done) return;
+      parent.dataset.done = '1';
+      const wrap = document.createElement('span');
+      wrap.className = 'skill-with-text';
+      wrap.appendChild(makeDot(val));
+      wrap.appendChild(document.createTextNode(val));
+      parent.replaceChild(wrap, t);
+      return;
+    }
+
+    // DEFAULT: replace text with icon only
+    const dot = makeDot(val);
+    if(!dot) return;
+    parent.replaceChild(dot, t);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', replaceSkillText);
+</script>
+
+
+<script id="skill-badge-select-fix">
+/* ===== FIX: KEEP TEXT + ICON IN SELECT / OPTION ===== */
+
+function applySkillIconsToSelect(){
+  document.querySelectorAll('select').forEach(sel=>{
+    sel.querySelectorAll('option').forEach(opt=>{
+      const val = opt.textContent.trim();
+      if(!SKILL_MAP[val]) return;
+
+      // Avoid duplicate
+      if(opt.dataset.iconized) return;
+      opt.dataset.iconized = '1';
+
+      // Prepend emoji icon but KEEP text
+      opt.textContent = `${SKILL_MAP[val].i} ${val}`;
+    });
+  });
+}
+
+// Override replaceSkillText to SKIP select/option entirely
+function replaceSkillText(){
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+  const texts = [];
+  while(walker.nextNode()) texts.push(walker.currentNode);
+
+  texts.forEach(t => {
+    const val = t.nodeValue && t.nodeValue.trim();
+    if(!SKILL_MAP[val]) return;
+
+    const parent = t.parentElement;
+    if(!parent) return;
+
+    // SKIP select / option
+    if(parent.closest('select, option')) return;
+
+    // EXCEPTION: add member section
+    if(parent.closest('#addMember, .add-member, #memberForm')){
+      if(parent.dataset.done) return;
+      parent.dataset.done = '1';
+      const wrap = document.createElement('span');
+      wrap.className = 'skill-with-text';
+      wrap.appendChild(makeDot(val));
+      wrap.appendChild(document.createTextNode(val));
+      parent.replaceChild(wrap, t);
+      return;
+    }
+
+    // DEFAULT: icon only
+    const dot = makeDot(val);
+    if(!dot) return;
+    parent.replaceChild(dot, t);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  replaceSkillText();
+  applySkillIconsToSelect();
+});
+</script>
+
 </body>
 <div style="text-align:center; margin: 20px 0;">
   <p style="margin-bottom:10px; font-weight:bold; color:var(--text-primary);">
