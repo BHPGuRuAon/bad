@@ -616,6 +616,87 @@
 }
 </style>
 
+
+<style id="history-2v2-responsive-fix">
+/* ===== Base card ===== */
+.history-game-card{
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+/* ===== DESKTOP / TABLET ===== */
+@media (min-width: 769px){
+  .history-game-grid{
+    display: grid;
+    grid-template-columns: 1fr 72px 1fr; /* equal sides */
+    align-items: center;
+  }
+
+  .history-team{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .history-player{
+    text-align: left;
+  }
+
+  .history-game-vs{
+    text-align: center;
+    font-weight: 700;
+    opacity: .7;
+  }
+
+  .history-game-time{
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: .6;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px){
+  .history-game-grid{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .history-team{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .history-game-vs{
+    text-align: center;
+    font-weight: 700;
+    opacity: .6;
+    margin: 4px 0;
+  }
+
+  .history-game-time{
+    text-align: center;
+    margin-top: 6px;
+    font-size: 11px;
+    opacity: .6;
+  }
+}
+
+/* ===== Player text ===== */
+.history-player strong{
+  font-size: 14px;
+}
+.history-player .level{
+  font-size: 12px;
+  opacity: .65;
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
