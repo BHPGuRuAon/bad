@@ -2433,6 +2433,52 @@ function hardFixSkillSelect(){
 document.addEventListener('DOMContentLoaded', hardFixSkillSelect);
 </script>
 
+
+<script id="waitlist-safe-name-fix">
+/* ===== SAFE FIX: KEEP ORIGINAL NAME TEXT ===== */
+
+const SKILL_ICON_MAP = {
+  'เบามาก': '🔵',
+  'เบา': '🟢',
+  'กลาง': '🟡',
+  'กลางหนัก': '🟠',
+  'หนัก': '🔴'
+};
+
+function cleanWaitText(raw){
+  // Keep everything before '(' as name text
+  const idx = raw.indexOf('(');
+  if(idx === -1) return raw;
+
+  const namePart = raw.slice(0, idx).trim();
+  const inside = raw.slice(idx + 1, raw.length - 1); // remove ()
+  // inside example: "หนัก | รอ 18:18" or "หนัก | ยังไม่มา"
+  const parts = inside.split('|').map(s=>s.trim());
+  if(parts.length < 2) return raw;
+
+  const skill = parts[0];
+  let status = parts[1].replace(/^รอ\s*/,''); // remove "รอ " only
+
+  const icon = SKILL_ICON_MAP[skill] || '';
+  return `${namePart} ${icon} ${status}`.trim();
+}
+
+function applyFix(){
+  document.querySelectorAll('option').forEach(opt=>{
+    if(opt.dataset.fixed) return;
+    const raw = opt.textContent.trim();
+    if(!raw.includes('(') || !raw.includes('|')) return;
+
+    const fixed = cleanWaitText(raw);
+    opt.textContent = fixed;
+    opt.dataset.fixed = '1';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', applyFix);
+document.addEventListener('click', applyFix);
+</script>
+
 </body>
 <div style="text-align:center; margin: 20px 0;">
   <p style="margin-bottom:10px; font-weight:bold; color:var(--text-primary);">
