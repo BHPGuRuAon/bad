@@ -440,608 +440,51 @@
   }
 
 
-/* ===== Skill Icon ===== */
-.skill-icon {
-  font-size: 18px;
-  cursor: pointer;
-  user-select: none;
-}
-.skill-เบามาก { color:#60a5fa; }
-.skill-เบา { color:#34d399; }
-.skill-กลาง { color:#facc15; }
-.skill-กลางหนัก { color:#ef4444; }
-.skill-หนัก { color:#7c2d12; }
-
-
-/* ===== Skill select icon size fix ===== */
-#membersTable select {
-  font-size: 14px; /* desktop */
-  padding: 4px;
-  text-align: center;
-}
-
-/* Mobile: make icon same size as text */
-@media (max-width: 640px){
-  #membersTable select {
-    font-size: 12px;
-    padding: 2px;
-  }
-}
-
-
-/* ===== Final fix: skill icon same size as table text ===== */
-#membersTable select {
-  font-size: 13px;      /* same as table text */
-  line-height: 1.2;
-  padding: 2px 4px;
-}
-
-/* Mobile portrait */
-@media (max-width: 640px){
-  #membersTable select {
-    font-size: 11px;    /* match mobile table text */
-    padding: 2px;
-  }
-}
-
-
-/* ===== FORCE skill icon size (override all) ===== */
-#membersTable td:nth-child(3) select {
-  font-size: 11px !important;
-  line-height: 1 !important;
-  padding: 0 !important;
-  height: 20px !important;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-/* shrink emoji rendering itself */
-#membersTable td:nth-child(3) select option {
-  font-size: 11px !important;
-}
-
-/* Mobile even smaller */
-@media (max-width: 640px){
-  #membersTable td:nth-child(3) select {
-    font-size: 10px !important;
-    height: 18px !important;
-  }
-  #membersTable td:nth-child(3) select option {
-    font-size: 10px !important;
-  }
-}
-
-
-/* ===== Skill icon size: Desktop vs Mobile ===== */
-
-/* Desktop / Laptop */
-@media (min-width: 641px){
-  #membersTable td:nth-child(3) select {
-    font-size: 14px !important;   /* เท่าข้อความตารางบนคอม */
-    height: 26px !important;
-    padding: 2px 6px !important;
-  }
-  #membersTable td:nth-child(3) select option {
-    font-size: 14px !important;
-  }
-}
-
-/* Mobile */
-@media (max-width: 640px){
-  #membersTable td:nth-child(3) select {
-    font-size: 10px !important;   /* เล็กลงบนมือถือ */
-    height: 18px !important;
-    padding: 0 !important;
-  }
-  #membersTable td:nth-child(3) select option {
-    font-size: 10px !important;
-  }
-}
-
-
-/* ===== Members table spacing tidy ===== */
-#membersTable {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-#membersTable th,
-#membersTable td {
-  padding: 6px 6px;        /* balanced spacing */
-  vertical-align: middle;
-}
-
-/* Inputs/selects inside members table */
-#membersTable input,
-#membersTable select,
-#membersTable button {
-  margin: 0;
-}
-
-/* Desktop */
-@media (min-width: 641px){
-  #membersTable th,
-  #membersTable td {
-    padding: 6px 8px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 640px){
-  #membersTable th,
-  #membersTable td {
-    padding: 4px 4px;      /* tighter but readable */
-  }
-}
-
-
-/* ===== Center skill column between Name and Status ===== */
-
-/* header + cell align center for skill column (col 3) */
-#membersTable th:nth-child(3),
-#membersTable td:nth-child(3) {
-  text-align: center;
-}
-
-/* make select itself centered */
-#membersTable td:nth-child(3) select {
-  margin: 0 auto;
-  display: block;
-}
-
-
-/* ===== Align Management column to the right ===== */
-
-/* จัดการ = คอลัมน์สุดท้าย */
-#membersTable th:last-child,
-#membersTable td:last-child {
-  text-align: right;
-}
-
-/* ปุ่มในคอลัมน์จัดการ ชิดขวา */
-#membersTable td:last-child button {
-  margin-left: 6px;
-}
-
-
-/* ===== Desktop ONLY: shrink number input width ===== */
-@media (min-width: 769px){
-  #membersTable td:nth-child(6) input[type="number"],
-  #membersTable td:nth-child(7) input[type="number"]{
-    width: auto !important;          /* ยกเลิก 100% / 60px */
-    min-width: 3.2ch !important;     /* พอดีเลข ไม่หาย */
-    max-width: 4ch !important;
-    padding: 2px 4px !important;
-    display: inline-block !important;
-    box-sizing: content-box !important;
-    text-align: center;
-  }
-}
-
-
-/* ===== Desktop: tighten column gaps (real spacing fix) ===== */
-@media (min-width: 769px){
-  #membersTable{
-    table-layout: fixed;
-  }
-
-  #membersTable th:nth-child(1),
-  #membersTable td:nth-child(1){ width:40px !important; }
-
-  #membersTable th:nth-child(2),
-  #membersTable td:nth-child(2){ width:100px !important; }
-
-  #membersTable th:nth-child(3),
-  #membersTable td:nth-child(3){ width:80px !important; }
-
-  #membersTable th:nth-child(4),
-  #membersTable td:nth-child(4){ width:70px !important; }
-
-  #membersTable th:nth-child(5),
-  #membersTable td:nth-child(5){ width:90px !important; }
-
-  #membersTable th:nth-child(6),
-  #membersTable td:nth-child(6){ width:55px !important; }
-
-  #membersTable th:nth-child(7),
-  #membersTable td:nth-child(7){ width:55px !important; }
-
-  #membersTable th:nth-child(8),
-  #membersTable td:nth-child(8){ width:60px !important; }
-}
-
-
-/* ===== เพิ่มระยะห่างระหว่างแถว (ตารางสมาชิก) ===== */
-
-/* ใช้ border-spacing เพื่อเว้นช่องไฟแนวตั้งระหว่างแถว */
-#membersTable{
-  border-collapse: separate !important;
-  border-spacing: 0 8px;   /* แนวนอน | แนวตั้ง */
-}
-
-/* ทำให้แถวลอยสวย ไม่ติดเส้น */
-#membersTable tbody tr{
-  background: transparent;
-}
-
-/* เพิ่มพื้นที่บน-ล่างใน cell นิดหน่อย ให้สบายตา */
-#membersTable th,
-#membersTable td{
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-/* มือถือ: ลดช่องไฟลงเล็กน้อย */
-@media (max-width: 640px){
-  #membersTable{
-    border-spacing: 0 6px;
-  }
-  #membersTable th,
-  #membersTable td{
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-}
-
-
-/* ===== Mobile: make skill icon input fit icon only ===== */
-@media (max-width: 640px){
-  /* คอลัมน์ระดับมือ */
-  #membersTable th:nth-child(3),
-  #membersTable td:nth-child(3){
-    width: 48px !important;
-    text-align: center;
-  }
-
-  /* select / input ระดับมือ ให้พอดีกับไอคอน */
-  #membersTable td:nth-child(3) select,
-  #membersTable td:nth-child(3) input{
-    width: 36px !important;
-    min-width: 36px !important;
-    padding: 2px !important;
-    margin: 0 auto;
-    display: block;
-    text-align: center;
-  }
-}
-
-
-/* ===== HARD FIX: Skill legend force text ===== */
-.skill-legend-fix{
-  display:flex;
-  gap:14px;
-  font-size:13px;
-  color:var(--text-muted);
-  margin:6px 0 10px;
-}
-
-.skill-legend-fix span{
-  position:relative;
-  padding-right:4px;
-}
-
-/* force text via pseudo-element */
-.skill-legend-fix span::after{
-  content: " " attr(data-label);
-  font-size:13px;
-  color:var(--text-muted);
-}
-
-@media (max-width:640px){
-  .skill-legend-fix,
-  .skill-legend-fix span::after{
-    font-size:12px;
-  }
-}
-
-
-/* ===== Skill legend directly above member rows ===== */
-.legend-head th{
-  font-weight: normal;
-  text-align: left;
-  padding: 6px 8px;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--divider);
-}
-
-.skill-legend-fix{
-  display:flex;
-  gap:14px;
-  font-size:13px;
-}
-
-.skill-legend-fix span::after{
-  content:" " attr(data-label);
-}
-
-@media (max-width:640px){
-  .skill-legend-fix{font-size:12px;}
-}
-
-
-/* ===== Skill legend ABOVE table headers ===== */
-.skill-legend-top{
-  display:flex;
-  gap:16px;
-  font-size:13px;
-  color:var(--text-muted);
-  margin:8px 0 6px;
-}
-
-.skill-legend-top span::after{
-  content:" " attr(data-label);
-}
-
-@media (max-width:640px){
-  .skill-legend-top{font-size:12px;}
-}
-
-
-/* ===== Mobile tidy: member header & legend ===== */
-@media (max-width:640px){
-
-  /* header inputs stack */
-  #membersCard > div:first-child{
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  #membersCard .row{
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  #membersCard input,
-  #membersCard select,
-  #membersCard button{
-    width: 100%;
-  }
-
-  /* legend wrap clean */
-  .skill-legend-top{
-    flex-wrap: wrap;
+/* ===== History mobile layout fix (2 per row) ===== */
+@media (max-width: 640px) {
+  .history-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px 12px;
-    line-height: 1.4;
-    margin: 6px 0 4px;
   }
-
-  /* reduce table header padding */
-  #membersTable th{
-    padding-top: 6px;
-    padding-bottom: 6px;
+  .history-player{
+    text-align: center;
   }
-}
-
-
-/* ===== Mobile: FORCE legend single row ===== */
-@media (max-width:640px){
-  .skill-legend-top{
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    white-space: nowrap;
-    gap: 12px;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-
-/* ===== Mobile: member controls single row ===== */
-@media (max-width:640px){
-  /* container of inputs + buttons */
-  #membersCard > div:first-child .row{
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    gap: 8px;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  #membersCard > div:first-child .row > *{
-    flex: 0 0 auto;
-    min-width: max-content;
-  }
-
-  #membersCard input#inputName{
-    min-width: 120px;
-  }
-
-  #membersCard select#inputSkill{
-    min-width: 90px;
-  }
-
-  #membersCard button{
-    min-width: 90px;
-  }
-}
-
-
-/* ===== Mobile: controls single row FIT screen (no scroll) ===== */
-@media (max-width:640px){
-  /* main control row */
-  #membersCard > div:first-child .row{
-    flex-wrap: nowrap !important;
-    overflow: hidden !important;
-    gap: 6px;
-  }
-
-  /* name input */
-  #membersCard input#inputName{
-    flex: 1 1 40%;
-    min-width: 0;
+  .history-name{
     font-size: 12px;
-    padding: 6px;
+    line-height: 1.15;
+    white-space: normal;
+    word-break: break-word;
   }
-
-  /* skill select */
-  #membersCard select#inputSkill{
-    flex: 0 0 72px;
-    font-size: 12px;
-    padding: 6px 4px;
-  }
-
-  /* add button */
-  #membersCard button#btnAdd{
-    flex: 0 0 78px;
-    font-size: 12px;
-    padding: 6px 4px;
-  }
-
-  /* reset button */
-  #membersCard button#btnReset{
-    flex: 0 0 78px;
-    font-size: 12px;
-    padding: 6px 4px;
+  .history-skill{
+    font-size: 10px;
+    line-height: 1.1;
+    margin-top: 2px;
   }
 }
 
 
-/* ===== Mobile redesign: clean & balanced controls ===== */
-@media (max-width:640px){
-
-  /* Header block */
-  #membersCard > div:first-child{
-    gap: 10px;
+/* ===== History mobile FINAL fix (force 2x2 layout) ===== */
+@media (max-width: 640px) {
+  .history-card .players{
+    display:grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px 14px;
   }
-
-  /* Control row */
-  #membersCard > div:first-child .row{
-    display: grid;
-    grid-template-columns: 1.4fr 0.8fr 1fr;
-    grid-template-areas:
-      "name skill add"
-      "reset reset reset";
-    gap: 8px;
+  .history-card .player{
+    text-align:center;
   }
-
-  /* Name */
-  #inputName{
-    grid-area: name;
-    font-size: 13px;
-    padding: 8px 10px;
-    border-radius: 10px;
+  .history-card .player-name{
+    font-size:12px;
+    line-height:1.15;
+    white-space:normal;
+    word-break:break-word;
   }
-
-  /* Skill */
-  #inputSkill{
-    grid-area: skill;
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 10px;
+  .history-card .player-skill{
+    font-size:10px;
+    line-height:1.1;
+    margin-top:2px;
   }
-
-  /* Add button */
-  #btnAdd{
-    grid-area: add;
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 10px;
-    background: var(--accent);
-  }
-
-  /* Reset button full width */
-  #btnReset{
-    grid-area: reset;
-    font-size: 12px;
-    padding: 8px;
-    border-radius: 10px;
-    background: var(--danger);
-    opacity: 0.9;
-  }
-}
-
-
-/* ===== Mobile fix: remove lonely reset button look ===== */
-@media (max-width:640px){
-
-  /* control grid redesign */
-  #membersCard > div:first-child .row{
-    display: grid;
-    grid-template-columns: 1.6fr 0.9fr 0.9fr;
-    grid-template-areas:
-      "name skill add"
-      "name reset reset";
-    gap: 8px;
-  }
-
-  /* reset button = secondary action */
-  #btnReset{
-    grid-area: reset;
-    font-size: 12px;
-    padding: 6px 8px;
-    border-radius: 10px;
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--danger);
-    opacity: 0.85;
-  }
-}
-
-
-/* ===== Mobile redesign: 2-row clean layout ===== */
-@media (max-width:640px){
-
-  /* control area */
-  #membersCard > div:first-child .row{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas:
-      "name name name"
-      "skill add reset";
-    gap: 8px;
-  }
-
-  /* name input full row */
-  #inputName{
-    grid-area: name;
-    width: 100%;
-    font-size: 13px;
-    padding: 9px 10px;
-    border-radius: 12px;
-  }
-
-  /* skill */
-  #inputSkill{
-    grid-area: skill;
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 12px;
-  }
-
-  /* add */
-  #btnAdd{
-    grid-area: add;
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 12px;
-    background: var(--accent);
-  }
-
-  /* reset */
-  #btnReset{
-    grid-area: reset;
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 12px;
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--danger);
-  }
-}
-
-
-/* ===== Light Mode: History card separation ===== */
-:root[data-theme="light"] #historyList,
-:root[data-theme="light"] #historySection{
-  background: #f8fafc;              /* light gray bg */
-  border: 1px solid #e5e7eb;         /* clear border */
-  box-shadow: 0 2px 6px rgba(0,0,0,.05);
-}
-
-:root[data-theme="light"] .history-game-card{
-  background: #ffffff;               /* white card */
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
 
 </style>
@@ -1471,6 +914,17 @@
 }
 </style>
 
+
+<style id="skill-badge-style">
+.skill-badge{display:inline-flex;align-items:center;gap:6px}
+.skill-badge .dot{
+  width:14px;height:14px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:10px;color:#000
+}
+.skill-text{font-size:12px;opacity:.8}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
@@ -1486,55 +940,39 @@
     <section class="card" id="membersCard">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><div><strong>ตารางสมาชิก</strong><div class="muted small">คลิกแก้ชื่อหรือระดับมือได้ตลอด</div></div></div>
-
-
-
+          <strong>ตารางสมาชิก</strong><div class="muted small">คลิกแก้ชื่อหรือระดับมือได้ตลอด</div>
         </div>
         <div class="row">
           <input id="inputName" type="text" placeholder="ชื่อสมาชิก" />
           <select id="inputSkill">
-            <option value="เบามาก">🔵 เบามาก</option>
-            <option value="เบา">🟢 เบา</option>
-            <option value="กลาง" selected>🟡 กลาง</option>
-            <option value="กลางหนัก">🔴 กลางหนัก</option>
-            <option value="หนัก">👿 หนัก</option>
+            <option>เบามาก</option>
+            <option>เบา</option>
+            <option selected>กลาง</option>
+            <option>กลางหนัก</option>
+            <option>หนัก</option>
           </select>
           <button id="btnAdd">เพิ่มสมาชิก</button>
           <button id="btnReset" class="red">รีเซ็ตทั้งหมด</button>
         </div>
       </div>
 
-      
-<div class="skill-legend-top">
-  <span data-label="เบามาก">🔵</span>
-  <span data-label="เบา">🟢</span>
-  <span data-label="กลาง">🟡</span>
-  <span data-label="กลางหนัก">🔴</span>
-  <span data-label="หนัก">👿</span>
-</div>
-
-<div style="overflow:auto;margin-top:12px">
+      <div style="overflow:auto;margin-top:12px">
         <table id="membersTable">
           <thead>
             <tr>
               <th style="width:46px">ลำดับ</th>
               <th style="width:100px">ชื่อ</th>
-              <th style="width:120px">มือ</th>
+              <th style="width:120px">ระดับมือ</th>
               <th style="width:90px">รอ</th>
               <th style="width:90px">สถานะ</th>
-              <th style="width:70px">เกม</th> 
-              <th style="width:90px">ลูก</th>
+              <th style="width:70px">ลงสนาม</th> 
+              <th style="width:90px">ลูกที่ใช้</th>
               <th style="width:80px">จัดการ</th>
             </tr>
-          
-    
-  </thead>
-
+          </thead>
           <tbody id="membersTbody"></tbody>
         </table>
       </div>
-    
     </section>
 
     <section class="card">
@@ -1596,18 +1034,6 @@
   calcData: { mode, equal:{courtCost, scCost, totalSC}, shuttlecock:{courtCost, scCost} }
 */
 const SKILL_VALUES = { 'เบามาก': 1, 'เบา': 2, 'กลาง': 3, 'กลางหนัก': 4, 'หนัก': 5 };
-
-function skillToIcon(skill){
-  switch(skill){
-    case 'เบามาก': return '🔵';
-    case 'เบา': return '🟢';
-    case 'กลาง': return '🟡';
-    case 'กลางหนัก': return '🔴';
-    case 'หนัก': return '👿';
-    default: return '⚪';
-  }
-}
-
 function uid(){ return Math.random().toString(36).slice(2,9); }
 function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
@@ -1791,28 +1217,17 @@ function renderMembers(){
     tdName.appendChild(nameInput);
     tr.appendChild(tdName);
 
-    // ระดับมือ (select แสดงเฉพาะไอคอน)
+    // ระดับมือ
     const tdSkill = document.createElement('td');
     const selSkill = document.createElement('select');
-    selSkill.style.fontSize = '18px';
-    selSkill.style.textAlign = 'center';
-
-    const skills = ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'];
-    skills.forEach(s => {
+    ['เบามาก','เบา','กลาง','กลางหนัก','หนัก'].forEach(s => {
       const op = document.createElement('option');
       op.value = s;
-      op.textContent = skillToIcon(s);
-      if (m.skill === s) op.selected = true;
+      op.textContent = s;
+      if(s === m.skill) op.selected = true;
       selSkill.appendChild(op);
     });
-
-    selSkill.onchange = () => {
-      m.skill = selSkill.value;
-      saveAll();
-      renderCourts();
-      renderHistory();
-    };
-
+    selSkill.onchange = () => { m.skill = selSkill.value; saveAll(); };
     tdSkill.appendChild(selSkill);
     tr.appendChild(tdSkill);
 
@@ -2902,152 +2317,21 @@ body{
 </style>
 
 
-<style id="skill-badge-replace-style">
-.skill-dot{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  font-size:11px;
-  color:#000;
-}
-.skill-with-text{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-}
-</style>
-
-
-
-
-
-
-
-<style id="skill-select-hard-fix">
-/* make select clearly readable */
-#inputSkill{
-  min-width:200px;
-  height:44px;
-  font-size:15px;
-}
-#inputSkill option{
-  font-size:15px;
-  padding:6px 10px;
-}
-</style>
-
-
-
-
-<script id="waitlist-safe-name-fix">
-/* ===== SAFE FIX: KEEP ORIGINAL NAME TEXT ===== */
-
-const SKILL_ICON_MAP = {
-  'เบามาก': '🔵',
-  'เบา': '🟢',
-  'กลาง': '🟡',
-  'กลางหนัก': '🔴',
-  'หนัก': '👿'
+<script id="skill-badge-js">
+const SKILL_BADGE={
+ 'เบามาก':{c:'#6ecbff',i:'🔵'},
+ 'เบา':{c:'#4caf50',i:'🟢'},
+ 'กลาง':{c:'#ffeb3b',i:'🟡'},
+ 'กลางหนัก':{c:'#ff9800',i:'🟠'},
+ 'หนัก':{c:'#f44336',i:'🔴'}
 };
-
-function cleanWaitText(raw){
-  // Keep everything before '(' as name text
-  const idx = raw.indexOf('(');
-  if(idx === -1) return raw;
-
-  const namePart = raw.slice(0, idx).trim();
-  const inside = raw.slice(idx + 1, raw.length - 1); // remove ()
-  // inside example: "หนัก | รอ 18:18" or "หนัก | ยังไม่มา"
-  const parts = inside.split('|').map(s=>s.trim());
-  if(parts.length < 2) return raw;
-
-  const skill = parts[0];
-  let status = parts[1].replace(/^รอ\s*/,''); // remove "รอ " only
-
-  const icon = SKILL_ICON_MAP[skill] || '';
-  return `${namePart} ${icon} ${status}`.trim();
+function renderSkillBadge(skill,withText=false){
+ const s=SKILL_BADGE[skill]||{c:'#999',i:'⚪'};
+ return `<span class="skill-badge">
+   <span class="dot" style="background:${s.c}">${s.i}</span>
+   ${withText?`<span class="skill-text">${skill}</span>`:''}
+ </span>`;
 }
-
-function applyFix(){
-  document.querySelectorAll('option').forEach(opt=>{
-    if(opt.dataset.fixed) return;
-    const raw = opt.textContent.trim();
-    if(!raw.includes('(') || !raw.includes('|')) return;
-
-    const fixed = cleanWaitText(raw);
-    opt.textContent = fixed;
-    opt.dataset.fixed = '1';
-  });
-}
-
-document.addEventListener('DOMContentLoaded', applyFix);
-document.addEventListener('click', applyFix);
-</script>
-
-
-<script id="skill-icon-lock-clean">
-/*
-  FINAL FIX:
-  - Never touch <select> or <option> content at all
-  - Convert skill text -> icon ONLY in normal text nodes
-  - No innerHTML patching (too aggressive)
-  - Use MutationObserver + text-node replace
-*/
-(function(){
-  const MAP = {
-    'เบามาก':'🔵',
-    'เบา':'🟢',
-    'กลาง':'🟡',
-    'กลางหนัก':'🔴',
-    'หนัก':'👿'
-  };
-
-  function isInSelect(node){
-    return node.parentElement && node.parentElement.closest('select, option');
-  }
-
-  function replaceTextNode(tn){
-    if(!tn || tn.nodeType !== Node.TEXT_NODE) return;
-    if(isInSelect(tn)) return;
-
-    let v = tn.nodeValue;
-    if(!v) return;
-
-    // replace longest words first
-    v = v.replace(/กลางหนัก/g, MAP['กลางหนัก']);
-    v = v.replace(/เบามาก/g, MAP['เบามาก']);
-    v = v.replace(/หนัก/g, MAP['หนัก']);
-    v = v.replace(/กลาง/g, MAP['กลาง']);
-    v = v.replace(/เบา/g, MAP['เบา']);
-
-    tn.nodeValue = v;
-  }
-
-  function scan(root){
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-    let n;
-    while(n = walker.nextNode()){
-      replaceTextNode(n);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    scan(document.body);
-
-    const mo = new MutationObserver(muts=>{
-      muts.forEach(m=>{
-        m.addedNodes.forEach(n=>{
-          if(n.nodeType === 3) replaceTextNode(n);
-          else if(n.nodeType === 1) scan(n);
-        });
-      });
-    });
-    mo.observe(document.body, {childList:true, subtree:true});
-  });
-})();
 </script>
 
 </body>
