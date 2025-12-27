@@ -439,6 +439,54 @@
     margin-top: 10px;
   }
 
+
+/* ===== History mobile layout fix (2 per row) ===== */
+@media (max-width: 640px) {
+  .history-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+  }
+  .history-player{
+    text-align: center;
+  }
+  .history-name{
+    font-size: 12px;
+    line-height: 1.15;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .history-skill{
+    font-size: 10px;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+}
+
+
+/* ===== History mobile FINAL fix (force 2x2 layout) ===== */
+@media (max-width: 640px) {
+  .history-card .players{
+    display:grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px 14px;
+  }
+  .history-card .player{
+    text-align:center;
+  }
+  .history-card .player-name{
+    font-size:12px;
+    line-height:1.15;
+    white-space:normal;
+    word-break:break-word;
+  }
+  .history-card .player-skill{
+    font-size:10px;
+    line-height:1.1;
+    margin-top:2px;
+  }
+}
+
 </style>
 
 <style id="anchor-scroll-fix">
@@ -866,6 +914,17 @@
 }
 </style>
 
+
+<style id="skill-badge-style">
+.skill-badge{display:inline-flex;align-items:center;gap:6px}
+.skill-badge .dot{
+  width:14px;height:14px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:10px;color:#000
+}
+.skill-text{font-size:12px;opacity:.8}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
@@ -901,14 +960,14 @@
         <table id="membersTable">
           <thead>
             <tr>
-              <th style="width:46px">ลำดับ</th>
+              <th style="width:46px">-</th>
               <th style="width:100px">ชื่อ</th>
-              <th style="width:120px">ระดับมือ</th>
+              <th style="width:120px">มือ</th>
               <th style="width:90px">รอ</th>
               <th style="width:90px">สถานะ</th>
-              <th style="width:70px">ลงสนาม</th> 
-              <th style="width:90px">ลูกที่ใช้</th>
-              <th style="width:80px">จัดการ</th>
+              <th style="width:70px">เกม</th> 
+              <th style="width:90px">ลูก</th>
+              <th style="width:80px">-</th>
             </tr>
           </thead>
           <tbody id="membersTbody"></tbody>
@@ -2256,6 +2315,24 @@ body{
   padding-bottom: 90px !important;
 }
 </style>
+
+
+<script id="skill-badge-js">
+const SKILL_BADGE={
+ 'เบามาก':{c:'#6ecbff',i:'🔵'},
+ 'เบา':{c:'#4caf50',i:'🟢'},
+ 'กลาง':{c:'#ffeb3b',i:'🟡'},
+ 'กลางหนัก':{c:'#ff9800',i:'🟠'},
+ 'หนัก':{c:'#f44336',i:'🔴'}
+};
+function renderSkillBadge(skill,withText=false){
+ const s=SKILL_BADGE[skill]||{c:'#999',i:'⚪'};
+ return `<span class="skill-badge">
+   <span class="dot" style="background:${s.c}">${s.i}</span>
+   ${withText?`<span class="skill-text">${skill}</span>`:''}
+ </span>`;
+}
+</script>
 
 </body>
 <div style="text-align:center; margin: 20px 0;">
