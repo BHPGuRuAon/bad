@@ -487,6 +487,24 @@
   }
 }
 
+
+/* ===== Floating Undo / Redo Buttons ===== */
+#undoFab,#redoFab{
+  position:fixed;
+  bottom:20px;
+  width:56px;height:56px;
+  border-radius:50%;
+  border:0;
+  font-size:22px;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.35);
+  z-index:9999;
+}
+#undoFab{right:20px;background:var(--accent)}
+#redoFab{right:90px;background:var(--gray-button)}
+#undoFab:disabled,#redoFab:disabled{opacity:.4;cursor:not-allowed}
+
 </style>
 
 <style id="anchor-scroll-fix">
@@ -925,6 +943,34 @@
 .skill-text{font-size:12px;opacity:.8}
 </style>
 
+
+<!-- ===== FORCE FIX FLOATING BUTTON POSITION (PC + MOBILE) ===== -->
+<style>
+/* override everything */
+#undoFab{
+  position: fixed !important;
+  right: 20px !important;
+  background: var(--accent) !important;
+}
+#redoFab{
+  position: fixed !important;
+  right: 90px !important;
+  background: var(--gray-button) !important;
+}
+
+/* desktop */
+@media (min-width: 769px){
+  #undoFab{ bottom: 20px !important; }
+  #redoFab{ bottom: 20px !important; }
+}
+
+/* mobile */
+@media (max-width: 768px){
+  #undoFab{ bottom: 110px !important; }
+  #redoFab{ bottom: 110px !important; }
+}
+</style>
+
 </head>
 <body data-theme="dark"> <div class="wrap">
     <header>
@@ -960,14 +1006,14 @@
         <table id="membersTable">
           <thead>
             <tr>
-              <th style="width:46px">-</th>
+              <th style="width:46px">ลำดับ</th>
               <th style="width:100px">ชื่อ</th>
-              <th style="width:120px">มือ</th>
+              <th style="width:120px">ระดับมือ</th>
               <th style="width:90px">รอ</th>
               <th style="width:90px">สถานะ</th>
-              <th style="width:70px">เกม</th> 
-              <th style="width:90px">ลูก</th>
-              <th style="width:80px">-</th>
+              <th style="width:70px">ลงสนาม</th> 
+              <th style="width:90px">ลูกที่ใช้</th>
+              <th style="width:80px">จัดการ</th>
             </tr>
           </thead>
           <tbody id="membersTbody"></tbody>
@@ -1024,6 +1070,103 @@
   </div>
 
 <script>
+
+/* ===== UNDO / REDO SYSTEM ===== */
+
+/* ===== GLOBAL WAIT TIME STORE (DO NOT RESET ON UNDO / ARRANGE) ===== */
+const __waitTimeStore = new Map();
+
+function syncWaitStore(){
+  members.forEach(m=>{
+    if(m.waitStartTime){
+      __waitTimeStore.set(m.id, m.waitStartTime);
+    }
+  });
+}
+
+/* ===== UNDO HOTFIX GUARD ===== */
+let __isRestoring = false;
+
+/* Patch saveAll to auto-push history when data changes */
+const __origSaveAll = saveAll;
+saveAll = function(){
+  if (!__isRestoring && typeof pushHistory === 'function') {
+    try { pushHistory(); } catch(e){}
+  }
+  return __origSaveAll.apply(this, arguments);
+};
+
+const MAX_HISTORY = 9;
+let undoStack = [];
+let redoStack = [];
+
+function cloneState(){
+  return {
+    members: members.map(m=>{
+      const c={...m};
+      delete c.waitStartTime; // ❌ ไม่เก็บเวลา "รอ"
+      return c;
+    }),
+    courts: JSON.parse(JSON.stringify(courts)),
+    pairHistory: JSON.parse(JSON.stringify(pairHistory)),
+    matchHistory: JSON.parse(JSON.stringify(matchHistory)),
+    calcData: JSON.parse(JSON.stringify(calcData))
+  };
+}
+
+function pushHistory(){
+  syncWaitStore();
+  undoStack.push(cloneState());
+  if(undoStack.length>MAX_HISTORY) undoStack.shift();
+  redoStack = [];
+  updateHistoryButtons();
+  __isRestoring = false;
+}
+
+function restoreState(state){
+  __isRestoring = true;
+
+  // 🕒 Preserve current waitStartTime so wait timer does NOT restart
+  const waitMap = new Map(members.map(m => [m.id, m.waitStartTime]));
+
+  __isRestoring = true;
+  members = state.members;
+
+  // restore waitStartTime from before undo/redo
+  members.forEach(m => {
+    if (__waitTimeStore.has(m.id)) {
+      m.waitStartTime = __waitTimeStore.get(m.id);
+    }
+  });
+  courts = state.courts;
+  pairHistory = state.pairHistory;
+  matchHistory = state.matchHistory;
+  calcData = state.calcData;
+  saveAll();
+  renderAll();
+  updateHistoryButtons();
+  __isRestoring = false;
+}
+
+function undo(){
+  if(!undoStack.length) return;
+  redoStack.push(cloneState());
+  restoreState(undoStack.pop());
+}
+
+function redo(){
+  if(!redoStack.length) return;
+  undoStack.push(cloneState());
+  restoreState(redoStack.pop());
+}
+
+function updateHistoryButtons(){
+  const u=document.getElementById('undoFab');
+  const r=document.getElementById('redoFab');
+  if(u) u.disabled = undoStack.length===0;
+  if(r) r.disabled = redoStack.length===0;
+}
+
 /* Data structures:
   // MODIFIED: 'plays' is now 'gamesPlayed' (number) for unlimited game count. 
   // 'plays' array is REMOVED from the data structure, but kept in code for skill-based sorting fallback.
@@ -1320,6 +1463,7 @@ function renderMembers(){
     btnDel.textContent = 'ลบ';
     btnDel.className = 'red';
     btnDel.onclick = () => {
+      pushHistory();
       if(!confirm('ลบสมาชิกนี้?')) return;
       
       // *** MODIFICATION: ลบผู้เล่นออกจากสนามและรีเซ็ตเวลาถ้าจำเป็น ***
@@ -1486,6 +1630,7 @@ function renderCourtElement(court) {
   btnEmpty.textContent='ว่าง'; 
   btnEmpty.className='gray'; 
   btnEmpty.onclick = ()=>{
+    pushHistory();
     if(!confirm('จะเคลียร์ผู้เล่นในสนามนี้ออกใช่หรือไม่?')) return;
     
     // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่ออกจากสนาม Players ทันที (เริ่มจับเวลาใหม่) ***
@@ -1504,7 +1649,8 @@ function renderCourtElement(court) {
   btnRemove.textContent='ลบ'; 
   btnRemove.className='red'; 
   btnRemove.style.marginLeft='0'; // Remove inline margin
-  btnRemove.onclick = ()=>{ 
+  btnRemove.onclick = ()=>{
+    pushHistory(); 
     if(!confirm('ลบสนามนี้?')) return; 
     
     // *** MODIFICATION: รีเซ็ตเวลาของผู้เล่นที่อยู่ในสนาม Players ที่กำลังจะถูกลบ ทันที (เริ่มจับเวลาใหม่) ***
@@ -1742,6 +1888,7 @@ function tryMakeMatch(avail){
 }
 
 function arrangeForCourt(courtId){
+  pushHistory();
   const court = courts.find(c=>c.id===courtId);
   const avail = getAvailableMembers();
   if(avail.length < 4){ alert('ต้องมีผู้เล่นอย่างน้อย 4 คนที่ยังว่าง'); return; }
@@ -1760,6 +1907,7 @@ function arrangeForCourt(courtId){
 
 /* Confirm arrangement: commit players -> update plays (now gamesPlayed) & history (MODIFIED) */
 function confirmArrangement(courtId){
+  pushHistory();
   const court = courts.find(c=>c.id===courtId);
   if(!court || !court.pending) return;
   const ids = court.pending.teams.flat();
@@ -2333,6 +2481,10 @@ function renderSkillBadge(skill,withText=false){
  </span>`;
 }
 </script>
+
+
+<button id="redoFab" onclick="redo()" title="Redo">↪</button>
+<button id="undoFab" onclick="undo()" title="Undo">↩</button>
 
 </body>
 <div style="text-align:center; margin: 20px 0;">
